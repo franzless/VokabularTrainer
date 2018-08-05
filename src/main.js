@@ -1,6 +1,13 @@
+import '@babel/polyfill'
 import Vue from 'vue'
+import './plugins/vuetify'
 import App from './App.vue'
 import router from './router'
+import toolbar from '@/components/navbar'
+
+
+
+Vue.component('my-toolbar', toolbar)
 
 Vue.config.productionTip = false
 
