@@ -23,7 +23,7 @@
     </div>
 </template>
 <script>
-import db from './firebaseinit'
+import db from '../db/firebaseinit'
 export default {
    name:'runtest',
    data(){
