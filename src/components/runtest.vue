@@ -16,68 +16,69 @@
                     <v-btn @click="next">next</v-btn>
             </v-layout>
         </v-container> -->
-        <!-- Liste mit allen Vokabeln -->
-        <v-layout justify-center align-center>
-        <v-flex sm4>
-       
-        <v-card>
-            <v-toolbar color="primary"><v-toolbar-title>Configure Test</v-toolbar-title></v-toolbar>
-            <v-list two-line subheader >
-                <v-tooltip color="red lighten-3" top>
-             <v-subheader slot="activator">Choose Language</v-subheader>
-             <span>Choose which language should be querried in Test</span>
-             </v-tooltip>
-             <v-list-tile>
-                 <v-radio-group v-model="plang">
-                     <v-radio color="yellow darken-3" value="german" label="German"></v-radio>
-                     <v-radio color="red" value="english" label="English"></v-radio>
-                    
-                 </v-radio-group>
-                 </v-list-tile>
-                 <v-divider></v-divider>
-                 <v-subheader>Which words should the Test contain?</v-subheader>
-                 <v-list-tile>
-                     <v-radio-group v-model="radio" :mandatory="false">
-                     <v-radio color="yellow darken-3" value="custom" label="custom"></v-radio>
-                     <v-radio color="red" value="random" label="random"></v-radio>
-                                       
-                 </v-radio-group>
-                 
-                 </v-list-tile>
-                 
-                 <v-list-tile v-if="radio=='random'">
-                    <v-flex xs6>
-                     <v-combobox v-model="numberofwords"
-                                :items="items"
-                                label="Choose/Enter number"></v-combobox>
-                    </v-flex>
-                 </v-list-tile>
-                 <v-list-tile v-if="radio=='custom'">
-                    <v-flex xs9>
-                     <v-select label="Choose your customized test" v-model="blubb"></v-select>
-                    </v-flex>
-                 </v-list-tile>
-                 <v-divider></v-divider>
-                 <v-list-tile>
-                     <v-btn @click="start" color="pdark" dark>Start Test</v-btn>   
-                 </v-list-tile>
-                 
-                 <v-list-tile-action>
-                     <v-alert transition="scale-transition" type="error" v-model="alert">
-                     Please choose Language and amount of words first    
-                     </v-alert>
-                 </v-list-tile-action>
-                 
-                 
-                     
-                    
+        <v-layout align-content-center justify-center>
 
-            </v-list>
-        </v-card>
-        </v-flex>
-        </v-layout>    
         
-          
+        <v-card width="600">
+            <v-layout >
+                <v-list subheader two-line>
+                <v-subheader>{{i + ' of ' + x}}</v-subheader>
+                <v-list-tile avatar>
+                    <v-list-tile-avatar>
+                        <img src="../assets/german.png" >
+                    </v-list-tile-avatar>
+                    <v-list-tile-content>
+                        <v-text-field disabled box :value="setword()"></v-text-field>
+                    </v-list-tile-content>
+                </v-list-tile>
+                <v-list-tile avatar>
+                    <v-list-tile-avatar>
+                        <img src="../assets/englisch.png" >
+                    </v-list-tile-avatar>
+                    <v-list-tile-content>
+                        <v-text-field box v-model="checkword"></v-text-field>
+                        
+                    </v-list-tile-content>
+                    <v-list-tile-content v-if="show">
+                        <v-text-field disabled box  value="test"></v-text-field>
+                        
+                    </v-list-tile-content>
+                </v-list-tile>
+                <v-list-tile>
+                    <v-btn @click="next" color="info">next</v-btn>
+                        
+                 </v-list-tile>
+            </v-list>
+            </v-layout>
+        </v-card>
+        <v-card>
+            <v-dialog v-model="dialog" width="500">
+                <v-toolbar color="success"><v-toolbar-title>Result</v-toolbar-title></v-toolbar>
+                <v-data-table
+                    :headers="headers"
+                    :items="result"
+                    hide-actions
+                    class="elevation-1"
+                    
+                    pagination.sync="pagination"
+                    item-key="id"
+                    loading="true"
+                    
+                >
+                <template slot="items" slot-scope="props">
+                    <td>{{ props.item.deutsch }}</td>
+                    <td>{{ props.item.englisch }}</td>
+                    <td>{{ props.item.trans }}</td>
+                    <td>{{ props.item.value }}</td>
+                 </template>
+                    
+                </v-data-table>
+
+            </v-dialog>
+        </v-card>
+        </v-layout>
+        
+        
 
     </div>
 </template>
@@ -89,16 +90,14 @@ export default {
        return{
            words:[],
            i:0,
+           x:null,
+           checkword:'',
            show:false,
-           result:false,
-           selected:[],
-           headers:[{text:'Richtig?',sortable:false},{text:'Englisch',sortable:false},{text:'Deutsch',sortable:false}],
-           radio:'',
-           plang:'',
-           items:[10,15,20,25,30],
-           numberofwords:null,
-           blubb:'',
-           alert:false
+           result:[],
+           dialog:false,
+           headers:[{text:'word',value:'deutsch'},{text:'your translation',value:'englisch'} ,{text:'correct translation',value:'trans'},{text:'correct?',value:'value'} ]
+           
+           
        }
    },
    
@@ -107,14 +106,15 @@ export default {
            querySnapshot.forEach(doc=>{
                this.words.push(doc.data())
            })
-       })
+       }).then(()=>{
+       var l= this.words.length
+       this.x = l-1})
+       
+              
    },
+   
    methods:{
-       start(){
-           if(!this.plang && !this.numberofwords){
-               this.alert=true
-           }
-       },
+       
        setworden(){
           
            return this.words[this.i].worden
@@ -126,11 +126,18 @@ export default {
 
        },
        next(){
-           var l = this.words.length
-           if(this.i+1==l){
-               this.result == true
+                      
+           if(this.i==this.x){
+               this.result.push({deutsch:this.setword(),englisch:this.checkword})
+               this.dialog=true
+               console.log(this.result)
+               alert('finished', this.result)
            }else{
-               	this.i ++
+               this.result.push({deutsch:this.setword(),englisch:this.checkword})
+               this.checkword='' 
+               this.i ++
+               
+                   
            }
 
             

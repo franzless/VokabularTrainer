@@ -1,21 +1,7 @@
 <template>
     <div>
         <my-toolbar></my-toolbar>
-        <!-- <v-container>
-            <v-layout row justify-center>
-                <v-flex xs1>
-                    <v-text-field box disabled :value="setworden()"></v-text-field>
-                </v-flex>
-                <v-flex xs2>
-                    <v-text-field ></v-text-field>
-                </v-flex>
-                <v-flex xs2 v-if="show">
-                    <v-text-field disabled solo :value="setword()"></v-text-field>
-                </v-flex>
-                    <v-btn @click="show=true">check</v-btn>
-                    <v-btn @click="next">next</v-btn>
-            </v-layout>
-        </v-container> -->
+        
         <!-- Liste mit allen Vokabeln -->
         <v-layout justify-center align-center>
         <v-flex sm4>
@@ -87,12 +73,7 @@ export default {
    name:'runtest',
    data(){
        return{
-           words:[],
-           i:0,
-           show:false,
-           result:false,
-           selected:[],
-           headers:[{text:'Richtig?',sortable:false},{text:'Englisch',sortable:false},{text:'Deutsch',sortable:false}],
+           
            radio:'',
            plang:'',
            items:[10,15,20,25,30],
