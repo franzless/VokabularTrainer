@@ -83,36 +83,14 @@ export default {
        }
    },
    
-   created(){
-       db.collection("words").get().then(querySnapshot =>{
-           querySnapshot.forEach(doc=>{
-               this.words.push(doc.data())
-           })
-       })
-   },
+   
    methods:{
        start(){
            if(!this.plang && !this.numberofwords){
                this.alert=true
            }
-       },
-       setworden(){
-          
-           return this.words[this.i].worden
-       },
-       setword(){
-           
-           
-           return this.words[this.i].wordde
-
-       },
-       next(){
-           var l = this.words.length
-           if(this.i+1==l){
-               this.result == true
-           }else{
-               	this.i ++
-           }
+       
+       
 
             
 

@@ -1,10 +1,10 @@
 <template>
 <div>
     <my-toolbar></my-toolbar>
-    <v-container fluid grid-list-xl>
-        <v-layout justify-center align center>
-            
-                <v-card class="elevation-12" width="500">
+    <v-container grid-list-xl fill-height>
+        <v-layout align-center  justify-center >
+            <v-flex xs12 sm8 md4>
+                <v-card class="elevation-12" >
         <v-flex sm6 offset-sm5>
             <v-chip v-for="(chip,index) in chips" :key="index" color="blue" text-color="white" close>{{chip}}</v-chip>
         </v-flex>
@@ -37,7 +37,7 @@
                 <v-btn @click="addwords" color="plight">add to Dictionary</v-btn>
             </v-flex>
             </v-card>
-            
+          </v-flex>
         </v-layout>
     </v-container>
 

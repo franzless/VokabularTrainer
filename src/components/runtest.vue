@@ -16,13 +16,14 @@
                     <v-btn @click="next">next</v-btn>
             </v-layout>
         </v-container> -->
-        <v-layout align-content-center justify-center>
+        <v-container fill-height>
+        <v-layout align-center justify-center>
 
         
-        <v-card width="600">
+        <v-card width="400" class="elevation-12">
             <v-layout >
                 <v-list subheader two-line>
-                <v-subheader>{{i + ' of ' + x}}</v-subheader>
+                <v-subheader>{{i+1}}  of {{x+1}}</v-subheader>
                 <v-list-tile avatar>
                     <v-list-tile-avatar>
                         <img src="../assets/german.png" >
@@ -52,32 +53,48 @@
             </v-layout>
         </v-card>
         <v-card>
-            <v-dialog v-model="dialog" width="500">
+            <v-dialog v-model="dialog" width="500" persistent>
                 <v-toolbar color="success"><v-toolbar-title>Result</v-toolbar-title></v-toolbar>
                 <v-data-table
                     :headers="headers"
-                    :items="result"
+                    :items="mappedresult"
                     hide-actions
                     class="elevation-1"
                     
                     pagination.sync="pagination"
-                    item-key="id"
-                    loading="true"
+                    item-key="word"
                     
                 >
                 <template slot="items" slot-scope="props">
-                    <td>{{ props.item.deutsch }}</td>
-                    <td>{{ props.item.englisch }}</td>
-                    <td>{{ props.item.trans }}</td>
-                    <td>{{ props.item.value }}</td>
+                    <tr :style="{backgroundColor: (props.item.value == true ? '#A5D6A7' : '#EF9A9A' ) }">
+                    <td >{{ props.item.word }}</td>
+                    <td>{{ props.item.entry }}</td>
+                    <td>{{ props.item.check }}</td>
+                    <td>
+        <v-checkbox
+          v-model="props.item.value"
+          primary
+          hide-details
+          disabled
+        ></v-checkbox>
+      </td></tr>
+                   </template>
+                 <template slot="footer">
+                    <td colspan="100%">
+                    <strong>You've got {{counter}} of {{x+1}} </strong>
+                    <v-spacer></v-spacer>
+                    <v-btn router to="/newtest" color="success">
+                        <v-icon>weekend</v-icon>
+                    </v-btn>
+                    </td>
                  </template>
-                    
+                  
                 </v-data-table>
 
             </v-dialog>
         </v-card>
         </v-layout>
-        
+        </v-container>
         
 
     </div>
@@ -94,13 +111,15 @@ export default {
            checkword:'',
            show:false,
            result:[],
+           mappedresult:[],
            dialog:false,
-           headers:[{text:'word',value:'deutsch'},{text:'your translation',value:'englisch'} ,{text:'correct translation',value:'trans'},{text:'correct?',value:'value'} ]
+           headers:[{text:'word',value:'deutsch'},{text:'your translation',value:'englisch'} ,{text:'correct translation',value:'trans'},{value:'value'} ],
+           counter:[]
            
            
        }
    },
-   
+      
    created(){
        db.collection("words").get().then(querySnapshot =>{
            querySnapshot.forEach(doc=>{
@@ -114,6 +133,15 @@ export default {
    },
    
    methods:{
+       count(){
+         this.counter= this.mappedresult.reduce((sum, order)=>{
+             if(order.value === true){
+                 
+                 return sum+1
+             }else{return sum}
+         }, 0)
+           
+       },
        
        setworden(){
           
@@ -129,9 +157,11 @@ export default {
                       
            if(this.i==this.x){
                this.result.push({deutsch:this.setword(),englisch:this.checkword})
+               this.newarray()
+               this.count()
                this.dialog=true
-               console.log(this.result)
-               alert('finished', this.result)
+               
+               
            }else{
                this.result.push({deutsch:this.setword(),englisch:this.checkword})
                this.checkword='' 
@@ -139,10 +169,34 @@ export default {
                
                    
            }
-
-            
-
-
+       },
+       newarray(){
+           
+       this.mappedresult= this.result.map((val,index,arr)=>{
+           return{
+           word:val.deutsch,
+           entry:val.englisch,
+           check:this.words[index].worden,
+           
+           }
+       }).map((val,index,arr)=>{
+           if (val.entry === val.check){
+               return{
+                   word:val.word,
+                   entry:val.entry,
+                   check:val.check,
+                   value:true
+               }
+           }else{
+               return{
+                  word:val.word,
+                   entry:val.entry,
+                   check:val.check,
+                   value:false 
+               }
+           }
+       })
+          
        }
    } 
 }

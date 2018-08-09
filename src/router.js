@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import runtest from '@/components/runtest'
+import newtest from '@/components/newTest'
 import addWords from '@/components/addWords'
 import login from '@/components/login'
 
@@ -19,6 +20,11 @@ export default new Router({
       path: '/test',
       name: 'test',
       component: runtest
+    },
+    {
+      path: '/newtest',
+      name: 'newtest',
+      component: newtest
     },
     {
       path: '/login',
