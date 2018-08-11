@@ -5,6 +5,7 @@ import newtest from '@/components/newTest'
 import addWords from '@/components/addWords'
 import login from '@/components/login'
 import home from '@/components/home'
+import Words from '@/components/words'
 
 Vue.use(Router)
 
@@ -37,6 +38,11 @@ export default new Router({
       path: '/home',
       name: 'home',
       component: home
+    },
+    {
+      path: '/words',
+      name: 'words',
+      component: Words
     },
 
     
