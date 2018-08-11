@@ -3,8 +3,10 @@
         <my-toolbar></my-toolbar>
         
         <!-- Liste mit allen Vokabeln -->
-        <v-layout justify-center align-center>
-        <v-flex sm4>
+        <v-content>
+        <v-container fill-height >
+        <v-layout justify-center >
+        <v-flex sm4 >
        
         <v-card>
             <v-toolbar color="primary"><v-toolbar-title>Configure Test</v-toolbar-title></v-toolbar>
@@ -62,8 +64,8 @@
         </v-card>
         </v-flex>
         </v-layout>    
-        
-          
+        </v-container>
+          </v-content>
 
     </div>
 </template>
