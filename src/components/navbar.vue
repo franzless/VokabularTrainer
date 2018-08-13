@@ -9,7 +9,7 @@
             <v-icon color="secondary" left>list</v-icon>
             Add
         </v-btn>
-        <v-btn flat router to="/test">
+        <v-btn flat router to="/newTest">
             <v-icon color="secondary" left>play_arrow</v-icon>
             Train
         </v-btn>

@@ -15,7 +15,7 @@
             single-line
             hide-details
             dark
-            color="black"
+            color="secondary"
         ></v-text-field>
     </v-card-title>
        <!-- Dialog for adding new/editing data    -->
@@ -134,7 +134,7 @@
                     <v-flex xs6>
                        
                     <v-text-field v-model="listname" label="Name of new List"></v-text-field>
-                    <v-switch color="black" v-model="mode" label="Public" value="public"></v-switch>
+                    <v-switch color="secondary" v-model="mode" label="Public" value="public"></v-switch>
                     <v-btn color="primary" @click="newlist">Create</v-btn>
                     <v-btn @click="dialog=false" color="error">Cancel</v-btn>
                     </v-flex>
