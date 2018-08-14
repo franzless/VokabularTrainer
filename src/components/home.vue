@@ -8,7 +8,7 @@
          <div class="display-2 font-weight-regular.font-italic">Your Dictionary
          <v-icon color="yellow accent-4" size=45>language</v-icon ></div>
          <br>  
-         <v-btn large color="primary">Start now</v-btn>
+         <v-btn router to="/login" large color="primary">Start now</v-btn>
          
     </v-layout>
     </v-parallax>
@@ -82,7 +82,7 @@
     We can give you help practicing words and so you can better interact and make faster progress.
          </div>
          <br><br>  
-         <v-btn large color="primary">Try now</v-btn>
+         <v-btn large router to="/login" color="primary">Try now</v-btn>
     </v-layout>
     </v-parallax>
    <v-container grid-list-xl>

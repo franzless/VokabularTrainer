@@ -25,7 +25,7 @@
         
          <v-btn flat router to="/login" v-if="!isLoggedIn">
             <v-icon color="secondary" left>face</v-icon> 
-            Login
+            Login/Register
         </v-btn>
         <v-btn flat v-if="isLoggedIn" @click="logout">
             <v-icon color="secondary" left>exit_to_app</v-icon> 
@@ -58,25 +58,11 @@ export default {
     methods:{
         logout(){
         firebase.auth().signOut().then(()=>{
-            this.$router.push('/login')
+            this.$router.go({path:this.$router.path})
             this.$store.commit('logout')
         })
         },
-        updateLoginUserState () {
-        if (firebase.auth().currentUser) {
-            this.isLoggedIn = true;
-            this.currentUser = firebase.auth().currentUser.email;
-            this.$store.commit('login',this.currentUser)
-        } else {
-           this.isLoggedIn = false
-           this.currentUser = false
-           this.$store.commit('logout')
-        }
-    }
-    },
-     watch: {
-    '$route': 'updateLoginUserState'
-  },
+        
   
  
 
@@ -84,5 +70,5 @@ export default {
     
     
     
-}
+}}
 </script>
