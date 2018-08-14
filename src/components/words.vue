@@ -187,9 +187,11 @@ export default {
             editedItem:{wordde:'',worden:'',wordid:''},
             defaultItem:{wordde:'',worden:'',wordid:''},
             loading:false
+            
         }
     },
     created(){
+    
        this.updatedata()
        
        
@@ -199,17 +201,19 @@ export default {
       formTitle () {
         return {title:this.editedIndex === -1 ? 'New Word' : 'Edit Word',
                 icon: this.editedIndex === -1 ? 'add_circle_outline' : 'edit'}
-      }
+      },
+      
     },
    methods:{
        deleteItem(item){
             const index = this.words.indexOf(item)
             var conf = confirm('Are you sure you want to delete this item?')
             if (conf === true) {
+            this.loading=true
            db.collection("words").doc(this.words[index].wordid).delete()
            .then(()=>{
-               this.loading=true
                this.updatedata()
+               this.loading = false
            })}
        },
        cancel(){
@@ -230,7 +234,7 @@ export default {
       addwords(){
             if(this.editedIndex === -1){           
             if(this.editedItem.wordde != '' && this.editedItem.worden != ''){
-               
+               this.loading = true
                 db.collection("words").doc().set({
                     wordde:this.editedItem.wordde,
                     worden:this.editedItem.worden,
@@ -243,6 +247,7 @@ export default {
             else{alert('Enter words first')
             }}
             else{
+                this.loading = true
                 db.collection("words").doc(this.editedItem.wordid).set({
                     wordde:this.editedItem.wordde,
                     worden:this.editedItem.worden,
@@ -259,6 +264,7 @@ export default {
         this.words = []
         const id= []
         const data = []
+        this.loading = true
         db.collection("words").get().then(querySnapshot =>{
            querySnapshot.forEach(doc=>{
                data.push(doc.data())
@@ -274,15 +280,16 @@ export default {
                    }
                })
               })
+              this.loading= false
        
     }
             },
-    watch: {
+    /* watch: {
       loading (val) {
         if (!val) return
 
         setTimeout(() => (this.loading = false), 2000)
-      }}
+      }} */
     }
 
 </script>
