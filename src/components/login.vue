@@ -84,7 +84,7 @@
 
 <script>
 import firebase from 'firebase'
-import fire from '../db/firebaseinit'
+import db from '../db/firebaseinit'
 
 
 export default {
@@ -102,6 +102,7 @@ export default {
         password: '',
         password2:'',
         username:'',
+        uid:''
 
       },
       user: {
@@ -121,27 +122,18 @@ export default {
   methods:{
     login(){
       var error = ''
-    firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password).catch(function(errors) {
-  // Handle Errors here.
-      
-      var errorCode = errors.code;
-      var errorMessage = errors.message;
-      
-      error= errorMessage
-      
-  // ...
-    }).then(user=>{
-      console.log(user)
+    firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password).
+    catch(function(errors) {
+        error= errorMessage
+       
+    }).then(user=>{     
       if(user){
       this.$store.commit('login', user)
       this.$router.push('/home')}
       else{
         this.loginerror.message=error
         this.loginerror.state=true    
-       
-      }
-
-    })
+     }})
     
     },
     
@@ -151,35 +143,37 @@ export default {
      if(this.newuser.password !== this.newuser.password2 || !this.newuser.password){
         this.error.state=true
         this.error.message = 'Password is not the same'
-        this.loading=false
+        this.loading= false
       }else if(!this.newuser.username || !this.newuser.email){
         this.error.state=true
         this.error.message='Email and Username are required'
-        this.loading=false
+        this.loading= false
       }
       else{
-        firebase.auth().createUserWithEmailAndPassword(this.newuser.email, this.newuser.password).catch(function(errors) {
-          // Handle Errors here.
-          var errorCode = errors.code;
-          var errorMessage = errors.message;
-          problem = errorMessage  
-      }).then(user=>{
-        if(user){
-        this.loading=false
-        this.$router.push('/login')
-        }else{
-          this.loading=false
+        firebase.auth().createUserWithEmailAndPassword(this.newuser.email, this.newuser.password)
+        .then(user=>{
+            this.newuser.uid = user.user.uid
+        }).then(()=>{
+          db.collection("users").doc(this.newuser.email).set({
+          uid:this.newuser.uid,
+          username:this.newuser.username  
+        })}).then(res=>{
+          this.$router.go({path:this.$router.path})
+          this.loading= false
+        }).catch(error=>{
+           problem = error.message
+        }).then(()=>{
           this.error.state=true
           this.error.message=problem
+          this.loading= false
+        })
+        
         }
-      })
         
         
-      }
-
-    }
-  },
-  }
+        }
+        }}
+  
 
 
   

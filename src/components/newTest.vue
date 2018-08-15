@@ -42,7 +42,7 @@
                  </v-list-tile>
                  <v-list-tile v-if="radio=='custom'">
                     <v-flex xs9>
-                     <v-select label="Choose your customized test" v-model="blubb"></v-select>
+                     <v-select label="Choose your customized test" :items="lists"></v-select>
                     </v-flex>
                  </v-list-tile>
                  <v-divider></v-divider>
@@ -81,7 +81,16 @@ export default {
            items:[10,15,20,25,30],
            numberofwords:null,
            blubb:'',
-           alert:false
+           alert:false,
+           lists:[]
+       }
+   },
+   created(){
+       this.getlists()
+   },
+   computed:{
+       user(){
+           return this.$store.getters.login
        }
    },
    
@@ -91,13 +100,17 @@ export default {
            if(!this.plang && !this.numberofwords){
                this.alert=true
            }
-       
-       
-
-            
-
-
+        },
+       getlists(){
+           var ref = db.collection("lists").where("uid", "==", this.user.uid).get().then(querySnapshot =>{
+               querySnapshot.forEach(doc=>{
+               this.lists.push(doc.data().Lname)    
+               })
+           })
+           
+           
        }
+
    } 
 }
 </script>

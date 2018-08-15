@@ -1,6 +1,7 @@
 <template>
 <div>
     <my-toolbar></my-toolbar>
+    
     <v-container>
     <v-card class="elevation-20" color="pdark">
     <v-card-title>
@@ -20,6 +21,9 @@
     </v-card-title>
        <!-- Dialog for adding new/editing data    -->
     <v-divider></v-divider>
+    <v-card-text>
+        
+    
     <v-dialog v-model="dialog1" max-width="500px" persistent>
         <v-btn  slot="activator" color="primary" dark class="mr-2">
             <v-icon class="mr-2" color="secondary">build</v-icon>New Word</v-btn>
@@ -66,7 +70,9 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-    <!--  end -->         
+    <!--  end -->
+    
+    </v-card-text>        
     <v-data-table
         :headers="headers"
         :items="words"
@@ -117,7 +123,7 @@
     </template>
     <template slot="footer">
                     <td colspan="100%">
-                        <v-btn  @click="newlist" color="plight"><v-icon class="mr-2" color="secondary">build</v-icon> Create new List
+                        <v-btn  @click="dialog=true" color="plight"><v-icon class="mr-2" color="secondary">build</v-icon> Create new List
                         </v-btn>
                     </td>
     </template>    
@@ -134,11 +140,19 @@
                     <v-flex xs6>
                        
                     <v-text-field v-model="listname" label="Name of new List"></v-text-field>
-                    <v-switch color="secondary" v-model="mode" label="Public" value="public"></v-switch>
-                    <v-btn color="primary" @click="newlist">Create</v-btn>
-                    <v-btn @click="dialog=false" color="error">Cancel</v-btn>
+                    <v-switch  color="secondary" v-model="mode" label="Public" ></v-switch>
+                    <v-btn :disabled="loading" :loading="loading" color="primary" @click="newlist">Create</v-btn>
+                    <v-btn :disabled="loading" :loading="loading" @click="dialog=false" color="error">Cancel</v-btn>
+                    
+                    
                     </v-flex>
                 </v-layout>
+                <v-alert type="error" v-model="error.state">
+                    {{error.message}} 
+                    </v-alert>
+                <v-alert type="success" v-model="success">
+                    New List succesfully created    
+                    </v-alert>
             </v-container>
         </v-card>
      
@@ -186,22 +200,31 @@ export default {
             editedIndex: -1,
             editedItem:{wordde:'',worden:'',wordid:''},
             defaultItem:{wordde:'',worden:'',wordid:''},
-            loading:false
+            loading:false,
+            listid:'',
+            error:{
+                state:false,
+                message:'New List Name is required and choose at least 5 Words for new List',
+               
+            },
+            success:false,
+            
             
         }
     },
     created(){
-    
-       this.updatedata()
-       
-       
-              
-   },
+          this.updatedata()
+     },
+     
+
    computed: {
       formTitle () {
         return {title:this.editedIndex === -1 ? 'New Word' : 'Edit Word',
                 icon: this.editedIndex === -1 ? 'add_circle_outline' : 'edit'}
       },
+      loginid (){
+          return this.$store.getters.login
+      }
       
     },
    methods:{
@@ -210,7 +233,7 @@ export default {
             var conf = confirm('Are you sure you want to delete this item?')
             if (conf === true) {
             this.loading=true
-           db.collection("words").doc(this.words[index].wordid).delete()
+           db.collection("users").doc(this.loginid.email).collection("words").doc(this.words[index].wordid).delete()
            .then(()=>{
                this.updatedata()
                this.loading = false
@@ -223,19 +246,74 @@ export default {
           this.editedIndex = -1
         }, 300)
        },
+       
+        
+       
        newlist(){
-           this.dialog=true
+          
+           if(!this.mode){
+               this.mode=false
+           }
+           
+           if(this.listname){
+           var newlist =''
+           db.collection("lists").add({
+              Lname:this.listname,
+              public:this.mode,
+              uid:this.loginid.uid,
+              createdAt:new Date (Date.now()) 
+           }).then(res =>{
+                newlist = res.id
+           }).then(()=>{
+              this.listid=newlist
+              this.addwordstolist()
+           })       
+            }else{
+                this.error.state = true
+            }
+                     },
+       addwordstolist(){
+    //Add selected words to new list
+
+           var data = this.words.map((val,ind)=>{
+               if (val.value){
+                   return{
+                       wordid:val.wordid,
+                       worden:val.worden,
+                       wordde:val.wordde
+                   } 
+               }
+           }).filter(val=>
+               val != undefined
+           )
+           this.loading = true
+           if(data.length<5){
+               db.collection("lists").doc(this.listid).delete()
+               this.error.state = true
+           }else{
+           data.forEach(word=>{
+               	db.collection("lists").doc(this.listid).collection("words").add(
+                    word)
+           })
+               this.error.state=false
+               this.success = true
+               this.listname = ''
+           }
+        this.loading = false         
        },
+
        editItem (item) {
         this.editedIndex = this.words.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialog1 = true
       },
+
       addwords(){
+          //Add new word to Collection
             if(this.editedIndex === -1){           
             if(this.editedItem.wordde != '' && this.editedItem.worden != ''){
                this.loading = true
-                db.collection("words").doc().set({
+                db.collection("users").doc(this.loginid.email).collection("words").doc().set({
                     wordde:this.editedItem.wordde,
                     worden:this.editedItem.worden,
                 }).then(()=>{
@@ -248,7 +326,7 @@ export default {
             }}
             else{
                 this.loading = true
-                db.collection("words").doc(this.editedItem.wordid).set({
+                db.collection("users").doc(this.loginid.email).collection("words").doc(this.editedItem.wordid).set({
                     wordde:this.editedItem.wordde,
                     worden:this.editedItem.worden,
                 }).then(()=>{
@@ -261,35 +339,32 @@ export default {
                 
         },
     updatedata(){
+        //Get words of user
         this.words = []
         const id= []
         const data = []
         this.loading = true
-        db.collection("words").get().then(querySnapshot =>{
-           querySnapshot.forEach(doc=>{
-               data.push(doc.data())
-               id.push(doc.id)
-
+       var query = db.collection("users").doc(this.loginid.email).collection("words").get().then(querySnapshot =>{
+           querySnapshot.forEach(doc=> {
+              this.words.push({wordid:doc.id,...doc.data()})           
+             
            })
-        }).then(()=>{
-               this.words = data.map((val,ind,arr)=>{
-                   return{
-                       wordde:val.wordde,
-                       worden:val.worden,
-                       wordid:id[ind]
-                   }
-               })
-              })
-              this.loading= false
-       
+           })
+            this.loading= false
+            
     }
-            },
+
+
+
+
+
+
     /* watch: {
       loading (val) {
         if (!val) return
 
         setTimeout(() => (this.loading = false), 2000)
       }} */
-    }
+    }}
 
 </script>

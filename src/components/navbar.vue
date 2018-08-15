@@ -50,7 +50,7 @@ export default {
     created(){
         if (firebase.auth().currentUser){
             this.isLoggedIn = true
-            this.currentUser = firebase.auth().currentUser.email
+            this.currentUser = firebase.auth().currentUser
             this.$store.commit('login',this.currentUser)
 
         }

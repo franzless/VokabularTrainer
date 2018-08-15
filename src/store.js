@@ -13,6 +13,7 @@ export default new Vuex.Store({
     login(state,payload){
       state.login = payload
       
+      
     },
     logout(state){
       state.login = ''
