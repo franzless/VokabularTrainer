@@ -100,7 +100,7 @@
                     </td> 
                     <td>{{ props.item.wordde }}</td>
                     <td>{{ props.item.worden }}</td>
-                    <td>{{ props.item.list }}</td>
+                    <td>{{ props.item.category }}</td>
                     <td class="justify-center ">
                         <v-icon
                             small
@@ -190,7 +190,7 @@ import db from '../db/firebaseinit'
 export default {
     data(){
         return{
-            headers:[{text:'New List',value:'value', sortable:false},{text:'German',value:'wordde'},{text:'English',value:'worden'},{text:'List-Name',value:'list'},{text:'Actions',value:'name',sortable:false}],
+            headers:[{text:'New List',value:'value', sortable:false},{text:'German',value:'wordde'},{text:'English',value:'worden'},{text:'Category',value:'category'},{text:'Actions',value:'name',sortable:false}],
             words:[],
             search:'',
             dialog:false,
@@ -250,6 +250,17 @@ export default {
         
        
        newlist(){
+           var data = this.words.map((val,ind)=>{
+               if (val.value){
+                   return{
+                       wordid:val.wordid,
+                       worden:val.worden,
+                       wordde:val.wordde
+                   } 
+               }
+           }).filter(val=>
+               val != undefined
+           )
           
            if(!this.mode){
                this.mode=false
@@ -260,7 +271,9 @@ export default {
            db.collection("lists").add({
               Lname:this.listname,
               public:this.mode,
-              uid:this.loginid.uid,
+              uid:{username:this.loginid.displayName,uid:this.loginid.uid},
+              clicks:0,
+              words:data.length,
               createdAt:new Date (Date.now()) 
            }).then(res =>{
                 newlist = res.id
@@ -368,3 +381,5 @@ export default {
     }}
 
 </script>
+
+

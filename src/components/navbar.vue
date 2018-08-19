@@ -14,7 +14,7 @@
             <v-icon color="secondary" left>play_arrow</v-icon>
             Train
         </v-btn>
-        <v-btn flat v-if="isLoggedIn">
+        <v-btn flat v-if="isLoggedIn" router to="/explore">
             <v-icon color="secondary" left>explore</v-icon> 
             Explore
         </v-btn>

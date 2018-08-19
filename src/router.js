@@ -6,6 +6,7 @@ import addWords from '@/components/addWords'
 import login from '@/components/login'
 import home from '@/components/home'
 import Words from '@/components/words'
+import explore from '@/components/explore'
 import firebase from 'firebase'
 
 Vue.use(Router)
@@ -59,6 +60,14 @@ let router = new Router({
       path: '/words',
       name: 'words',
       component: Words,
+      meta:{
+        requiresAuth:true
+      }
+    },
+    {
+      path: '/explore',
+      name: 'explore',
+      component: explore,
       meta:{
         requiresAuth:true
       }

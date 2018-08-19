@@ -122,14 +122,27 @@ export default {
   methods:{
     login(){
       var error = ''
+      var name = {}
     firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password).
     catch(function(errors) {
-        error= errorMessage
+        error= errors.message
        
-    }).then(user=>{     
+    }).then(user=>{
+                  
+      
+           
       if(user){
+        if(!user.displayName){
+        db.collection("users").doc(user.user.email).get().then(query=>{
+        name.username = query.data().username
+       }).then(()=>{
+        firebase.auth().currentUser.updateProfile({
+        displayName:name.username})       
+      })
+      }
       this.$store.commit('login', user)
-      this.$router.push('/home')}
+      this.$router.push('/home')
+      }
       else{
         this.loginerror.message=error
         this.loginerror.state=true    

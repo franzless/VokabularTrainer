@@ -105,7 +105,7 @@ export default {
    name:'runtest',
    data(){
        return{
-           words:[],
+           test:[],
            i:0,
            x:null,
            checkword:'',
@@ -121,18 +121,31 @@ export default {
    },
       
    created(){
-       db.collection("words").get().then(querySnapshot =>{
-           querySnapshot.forEach(doc=>{
-               this.words.push(doc.data())
-           })
-       }).then(()=>{
-       var l= this.words.length
-       this.x = l-1})
-       
+       setTimeout(()=>{
               
+              this.x = this.words.length -1
+             
+       },1000)
+    
+    
+              
+   },
+   computed:{
+       words(){
+           return this.$store.getters.getwords  
+       },
+       info(){
+           return this.$store.getters.getlistinfo
+       }
    },
    
    methods:{
+       clicks(){
+           
+           db.collection("lists").doc(this.info[0].docid).update({
+               clicks:this.info[0].clicks+1
+           })
+       },
        count(){
          this.counter= this.mappedresult.reduce((sum, order)=>{
              if(order.value === true){
@@ -149,17 +162,21 @@ export default {
        },
        setword(){
            
-           
-           return this.words[this.i].wordde
-
+            return this.words[this.i].wordde
+       
        },
        next(){
                       
            if(this.i==this.x){
                this.result.push({deutsch:this.setword(),englisch:this.checkword})
                this.newarray()
+               if(this.info){
+                   this.clicks()
+               }
                this.count()
+               
                this.dialog=true
+               
                
                
            }else{

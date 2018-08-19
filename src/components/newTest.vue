@@ -42,17 +42,17 @@
                  </v-list-tile>
                  <v-list-tile v-if="radio=='custom'">
                     <v-flex xs9>
-                     <v-select label="Choose your customized test" :items="lists"></v-select>
+                     <v-select label="Choose your customized test" :items="lists" v-model="list"></v-select>
                     </v-flex>
                  </v-list-tile>
                  <v-divider></v-divider>
                  <v-list-tile>
-                     <v-btn @click="start" color="pdark" dark>Start Test</v-btn>   
+                     <v-btn :disabled="loading" :loading="loading" @click="start" color="pdark" dark>Start Test</v-btn>   
                  </v-list-tile>
                  
                  <v-list-tile-action>
                      <v-alert transition="scale-transition" type="error" v-model="alert">
-                     Please choose Language and amount of words first    
+                     Please choose Language and List first   
                      </v-alert>
                  </v-list-tile-action>
                  
@@ -65,6 +65,26 @@
         </v-flex>
         </v-layout>    
         </v-container>
+        <v-dialog
+      v-model="loading"
+      hide-overlay
+      persistent
+      width="300"
+    >
+      <v-card
+        color="primary"
+        dark
+      >
+        <v-card-text>
+          Please stand by
+          <v-progress-linear
+            indeterminate
+            color="secondary"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
           </v-content>
 
     </div>
@@ -80,36 +100,108 @@ export default {
            plang:'',
            items:[10,15,20,25,30],
            numberofwords:null,
-           blubb:'',
+           count:0,
            alert:false,
-           lists:[]
+           lists:[],
+           list:'',
+           words:[],
+           loading:false
        }
    },
    created(){
        this.getlists()
+       this.yourWords()
    },
    computed:{
        user(){
            return this.$store.getters.login
-       }
+       },
+       
    },
    
    
    methods:{
+       
        start(){
-           if(!this.plang && !this.numberofwords){
+           
+           this.words= []
+           var data = []
+           if(!this.list && !this.numberofwords){
                this.alert=true
-           }
+           }else{
+               if(this.radio == 'custom'){
+                   db.collection("lists").where("Lname","==",this.list).get().then(query=>{
+                       query.forEach(doc=>{
+                           
+                           data.push({docid:doc.id,
+                           ...doc.data()})
+                       })                          
+                           
+                       
+                    }).then(()=>{
+                       
+                    db.collection("lists").doc(data[0].docid).collection("words").get().then(query=>{
+                        query.forEach(word=>{
+                           this.words.push(word.data())
+                        })
+                    })
+                    }).then(()=>{
+                        this.loading = true
+                        setTimeout(()=>{
+                        this.$store.dispatch('addWords',this.words)
+                        this.$store.dispatch('listinfo',data)
+                        this.$router.push('/test')
+                        this.loading=false
+                        },4000)
+                        
+                        
+                        
+                    })
+                  
+               }else if(this.radio == 'random'){
+                                       
+                   
+                   if(!this.numberofwords || this.numberofwords > this.count){
+                       alert('Not enough words in your Collection')
+                   }else{
+                   db.collection("users").doc(this.user.email).collection("words").get().then(query=>{
+                       query.forEach(word=>{
+                           this.words.push(word.data()) 
+                       })
+                   }).then(()=>{
+                        var kill = this.words.length - this.numberofwords
+                        for(var i=0;i<kill;i++){
+                                var random = Math.floor((Math.random() * this.words.length) + 0)
+                                this.words.splice(random,1)    
+                        }
+                    }).then(()=>{
+                        this.$store.commit('addWords',this.words)
+                        this.$router.push('/test')
+                    })
+                        }}
+                    }
         },
        getlists(){
-           var ref = db.collection("lists").where("uid", "==", this.user.uid).get().then(querySnapshot =>{
+           var ref = db.collection("lists").where("uid.uid", "==", this.user.uid).get().then(querySnapshot =>{
                querySnapshot.forEach(doc=>{
                this.lists.push(doc.data().Lname)    
                })
            })
            
-           
+       },
+       yourWords(){
+           this.count = 0
+           var count = 0
+           db.collection("users").doc(this.user.email).collection("words").get().then(query=>{
+               query.forEach(doc=>{
+                   count ++
+               })
+           }).then(()=>{
+            
+             this.count = count                  
+           })
        }
+       
 
    } 
 }
