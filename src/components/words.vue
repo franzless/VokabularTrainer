@@ -37,6 +37,7 @@
                 <v-layout justify-center align-left >
               
             <v-flex sm8>
+                
                 <v-text-field prepend-icon="g_translate" box v-model="editedItem.wordde" @click:prepend="translate(editedItem.wordde)">{{formTitle.title}}
                 </v-text-field>
                 

@@ -4,9 +4,10 @@ import runtest from '@/components/runtest'
 import newtest from '@/components/newTest'
 import addWords from '@/components/addWords'
 import login from '@/components/login'
-import home from '@/components/home'
+import home from '@/components/home2'
 import Words from '@/components/words'
 import explore from '@/components/explore'
+import register from '@/components/register'
 import firebase from 'firebase'
 
 Vue.use(Router)
@@ -71,6 +72,12 @@ let router = new Router({
       meta:{
         requiresAuth:true
       }
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: register,
+      
     },
 
     

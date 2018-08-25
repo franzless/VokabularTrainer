@@ -30,11 +30,9 @@ export default new Vuex.Store({
       state.listinfo = []
           payload.forEach(info=>{
           state.listinfo.push(info)
-        })
-            
+        })            
     }
     
-
     },
 
   
