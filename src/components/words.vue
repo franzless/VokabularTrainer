@@ -2,6 +2,7 @@
 <div>
     <my-toolbar></my-toolbar>
     
+    
     <v-container>
     <v-card class="elevation-20" color="pdark">
     <v-card-title>
@@ -33,11 +34,12 @@
           <v-card-text>
             <v-container grid-list-md>
               <v-layout column wrap>
-                <v-layout justify-center >
+                <v-layout justify-center align-left >
               
             <v-flex sm8>
-                <v-text-field box v-model="editedItem.wordde">{{formTitle.title}}
+                <v-text-field prepend-icon="g_translate" box v-model="editedItem.wordde" @click:prepend="translate(editedItem.wordde)">{{formTitle.title}}
                 </v-text-field>
+                
             </v-flex>
             <v-avatar size="50" ><img src="../assets/german.png" alt="">    
                 </v-avatar>
@@ -181,12 +183,17 @@
     </v-dialog>
 
     <!-- end loading -->
+    
     </v-layout>
    </v-container>
+<v-snackbar v-model="snackbar" top :timeout="timeout" color="red">
+    <v-icon >error</v-icon>    Cannot translate empty line, please enter something first
+   </v-snackbar>   
 </div>
 </template>
 <script>
 import db from '../db/firebaseinit'
+import axios from 'axios'
 export default {
     data(){
         return{
@@ -208,6 +215,8 @@ export default {
                
             },
             success:false,
+            snackbar:false,
+            timeout:6000
             
             
         }
@@ -228,6 +237,17 @@ export default {
       
     },
    methods:{
+       translate(e){
+           if(!e){
+               this.snackbar=true
+           }else{
+               axios.get('https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20180825T163250Z.3c6bbbd69e90b59f.458f06e8e709440823a3b83552dcd91b752056f6&text='+e+'&lang=de-en').then((response)=>{
+                   
+               this.editedItem.worden = response.data.text[0]    
+               })
+           }
+           
+       },
        deleteItem(item){
             const index = this.words.indexOf(item)
             var conf = confirm('Are you sure you want to delete this item?')

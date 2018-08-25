@@ -8,6 +8,7 @@ import words from '@/components/words'
 import store from './store'
 
 
+
 Vue.component('my-words', words)
 Vue.component('my-toolbar', toolbar)
 
