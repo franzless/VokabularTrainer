@@ -101,6 +101,7 @@
 </template>
 <script>
 import db from '../db/firebaseinit'
+import firebase from 'firebase'
 export default {
    name:'runtest',
    data(){
@@ -136,13 +137,16 @@ export default {
        },
        info(){
            return this.$store.getters.getlistinfo
+       },
+       user(){
+           return this.$store.getters.login
        }
    },
    
    methods:{
-       clicks(){
+       async clicks(){
            
-           db.collection("lists").doc(this.info[0].docid).update({
+           await db.collection("lists").doc(this.info[0].docid).update({
                clicks:this.info[0].clicks+1
            })
        },
@@ -191,30 +195,44 @@ export default {
            
        this.mappedresult= this.result.map((val,index,arr)=>{
            return{
-           word:val.deutsch,
-           entry:val.englisch,
-           check:this.words[index].worden,
-           
-           }
+                word:val.deutsch,
+                entry:val.englisch,
+                check:this.words[index].worden,
+                
+                }
        }).map((val,index,arr)=>{
            if (val.entry === val.check){
+             
                return{
+                   wordid:this.words[index].wordid,
                    word:val.word,
                    entry:val.entry,
                    check:val.check,
                    value:true
                }
            }else{
+                
                return{
-                  word:val.word,
+                   wordid:this.words[index].wordid,
+                   word:val.word,
                    entry:val.entry,
                    check:val.check,
                    value:false 
                }
            }
        })
+       this.updatestatistics()
           
-       }
+       },
+        async updatestatistics(){
+            await this.mappedresult.forEach(word=>{
+                db.collection("users").doc(this.user.email).collection("words")
+                .doc(word.wordid).update({    
+                    statistics:firebase.firestore.FieldValue.arrayUnion({correct:word.value, time: new Date (Date.now())})
+   
+                })
+            })
+        }
    } 
 }
 </script>

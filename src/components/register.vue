@@ -79,7 +79,7 @@ export default {
                             uid:this.newuser.uid,
                             username:this.newuser.username,
                             lang:this.newuser.native 
-                        })}).then(res=>{
+                        })}).then(()=>{
                             this.success=true
                             setTimeout(()=>{
                                 this.$router.push('/login')

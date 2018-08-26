@@ -63,6 +63,13 @@ export default {
        
     }
   },
+  created(){
+    var ref = db.collection("lists").doc("4ueXMde5aMPlaRbJyEZe").collection("words").doc("AQ3Foui4EbL2AbzvHm5J")
+    
+    ref.update({
+      statistics:firebase.firestore.FieldValue.arrayUnion({correct:false, time: new Date (Date.now())})
+    })
+  },
   methods:{
     login(){
       var error = ''

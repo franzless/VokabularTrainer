@@ -36,38 +36,38 @@
               <v-layout column wrap>
                 <v-layout justify-center align-left >
               
-            <v-flex sm8>
-                
+            <v-flex sm8>                
                 <v-text-field prepend-icon="g_translate" box v-model="editedItem.wordde" @click:prepend="translate(editedItem.wordde)">{{formTitle.title}}
-                </v-text-field>
-                
+                </v-text-field>                
             </v-flex>
-            <v-avatar size="50" ><img src="../assets/german.png" alt="">    
-                </v-avatar>
+            <v-avatar size="50" ><img src="../assets/96/Germany.png" alt="">    
+            </v-avatar>
             </v-layout>
-        
         <v-layout row justify-center  >
-          
             <v-flex sm8>
                 <v-text-field box  v-model="editedItem.worden" >
-
                 </v-text-field>
             </v-flex>
-            <v-avatar size="50"><img src="../assets/englisch.png" alt="">    
-                </v-avatar>
-            </v-layout>
-                 </v-layout>
-            </v-container>
+                 <v-avatar size="50"><img src="../assets/96/England.png" alt="">    
+                 </v-avatar>
+        </v-layout>
+        <v-layout row justify-center>
+            <v-flex sm8>
+                <v-text-field box v-model="editedItem.category" label="Category(optional)"></v-text-field>
+            </v-flex>
+        </v-layout>
+        </v-layout>
+        </v-container>
              
           </v-card-text>
           <v-alert type="info" :value="true">
                     Lists can be edited on "Share"
-                </v-alert>
+            </v-alert>
 
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="error"  @click.native="cancel">
-                <v-icon dark>remove_circle</v-icon></v-btn>
+                <v-icon dark>cancel</v-icon></v-btn>
             <v-btn color="plight" :disabled="loading" :loading="loading"  @click.native="addwords" @click.stop="loading=true">
                 <v-icon dark>{{formTitle.icon}}</v-icon></v-btn>
           </v-card-actions>
@@ -104,6 +104,9 @@
                     <td>{{ props.item.wordde }}</td>
                     <td>{{ props.item.worden }}</td>
                     <td>{{ props.item.category }}</td>
+                    <td><v-icon color="red">sentiment_very_dissatisfied</v-icon>
+                        <v-icon color="grey">adb</v-icon>
+                        <v-icon color="green">insert_emoticon</v-icon></td>
                     <td class="justify-center ">
                         <v-icon
                             small
@@ -198,7 +201,7 @@ import axios from 'axios'
 export default {
     data(){
         return{
-            headers:[{text:'New List',value:'value', sortable:false},{text:'German',value:'wordde'},{text:'English',value:'worden'},{text:'Category',value:'category'},{text:'Actions',value:'name',sortable:false}],
+            headers:[{text:'New List',value:'value', sortable:false},{text:'German',value:'wordde'},{text:'English',value:'worden'},{text:'Category',value:'category'},{text:'Statistics',sortable:false},{text:'Actions',value:'name',sortable:false},],
             words:[],
             search:'',
             dialog:false,
@@ -206,8 +209,8 @@ export default {
             listname:'',
             mode:'',
             editedIndex: -1,
-            editedItem:{wordde:'',worden:'',wordid:''},
-            defaultItem:{wordde:'',worden:'',wordid:''},
+            editedItem:{wordde:'',worden:'',wordid:'',category:''},
+            defaultItem:{wordde:'',worden:'',wordid:'',category:''},
             loading:false,
             listid:'',
             error:{
@@ -217,7 +220,8 @@ export default {
             },
             success:false,
             snackbar:false,
-            timeout:6000
+            timeout:6000,
+            statisticsIcon:[]
             
             
         }
@@ -271,7 +275,7 @@ export default {
         
        
        newlist(){
-           var data = this.words.map((val,ind)=>{
+           var data = this.words.map((val)=>{
                if (val.value){
                    return{
                        wordid:val.wordid,
@@ -309,7 +313,7 @@ export default {
        addwordstolist(){
     //Add selected words to new list
 
-           var data = this.words.map((val,ind)=>{
+           var data = this.words.map((val)=>{
                if (val.value){
                    return{
                        wordid:val.wordid,
@@ -326,7 +330,7 @@ export default {
                this.error.state = true
            }else{
            data.forEach(word=>{
-               	db.collection("lists").doc(this.listid).collection("words").add(
+            db.collection("lists").doc(this.listid).collection("words").add(
                     word)
            })
                this.error.state=false
@@ -350,11 +354,13 @@ export default {
                 db.collection("users").doc(this.loginid.email).collection("words").doc().set({
                     wordde:this.editedItem.wordde,
                     worden:this.editedItem.worden,
+                    category:this.editedItem.category
                 }).then(()=>{
                     this.updatedata()
                 }) 
                     this.editedItem.wordde=''
                     this.editedItem.worden=''
+                    this.editedItem.category=''
                 }
             else{alert('Enter words first')
             }}
@@ -363,6 +369,7 @@ export default {
                 db.collection("users").doc(this.loginid.email).collection("words").doc(this.editedItem.wordid).set({
                     wordde:this.editedItem.wordde,
                     worden:this.editedItem.worden,
+                    category:this.editedItem.category,
                 }).then(()=>{
                     this.updatedata()
                     this.dialog1=false
@@ -375,10 +382,10 @@ export default {
     updatedata(){
         //Get words of user
         this.words = []
-        const id= []
-        const data = []
+        
+       
         this.loading = true
-       var query = db.collection("users").doc(this.loginid.email).collection("words").get().then(querySnapshot =>{
+        db.collection("users").doc(this.loginid.email).collection("words").get().then(querySnapshot =>{
            querySnapshot.forEach(doc=> {
               this.words.push({wordid:doc.id,...doc.data()})           
              
