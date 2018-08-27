@@ -104,9 +104,9 @@
                     <td>{{ props.item.wordde }}</td>
                     <td>{{ props.item.worden }}</td>
                     <td>{{ props.item.category }}</td>
-                    <td><v-icon color="red">sentiment_very_dissatisfied</v-icon>
-                        <v-icon color="grey">adb</v-icon>
-                        <v-icon color="green">insert_emoticon</v-icon></td>
+                    <td><v-icon :color="color1(props.item.statistics)">{{`${icon1(props.item.statistics)}`}}</v-icon>
+                        <v-icon :color="color2(props.item.statistics)">{{`${icon2(props.item.statistics)}`}}</v-icon>
+                        <v-icon :color="color3(props.item.statistics)">{{`${icon3(props.item.statistics)}`}}</v-icon></td>
                     <td class="justify-center ">
                         <v-icon
                             small
@@ -228,10 +228,13 @@ export default {
     },
     created(){
           this.updatedata()
+          
+          
      },
      
 
    computed: {
+      
       formTitle () {
         return {title:this.editedIndex === -1 ? 'New Word' : 'Edit Word',
                 icon: this.editedIndex === -1 ? 'add_circle_outline' : 'edit'}
@@ -242,6 +245,70 @@ export default {
       
     },
    methods:{
+       icon1(i){
+           if (i === undefined){
+               return 'adb'
+           }else{
+               var l = i.length
+               if(l-1){
+                   return i[l-1].correct === true ? 'mood' :'mood_bad'
+               }else{return 'adb'}
+           }        
+       },
+       icon2(i){
+           if (i === undefined){
+               return 'adb'
+           }else{
+               var l = i.length
+               if(l-2 >= 0){
+                   return i[l-2].correct === true ? 'mood' :'mood_bad'
+               }else{return 'adb'}
+           }        
+       },
+       icon3(i){
+           if (i === undefined){
+               return 'adb'
+           }else{
+               var l = i.length
+               if(l-3>=0){
+                   return i[l-3].correct === true ? 'mood' :'mood_bad'
+               }else{return 'adb'}
+           }        
+       },
+       
+       color1(i){
+           if (i === undefined){
+               return 'grey'
+           }else{
+               var l = i.length
+               if(l-1){
+                   return i[l-1].correct === true ? 'green' :'red'
+               }else{return 'grey'}
+           }           
+       },
+       color2(i){
+           if (i === undefined){
+               return 'grey'
+           }else{
+               var l = i.length
+               if(l-2 >= 0){
+                   return i[l-2].correct === true ? 'green' :'red'
+               }else{return 'grey'}
+           }           
+       },
+       color3(i){
+           if (i === undefined){
+               return 'grey'
+           }else{
+               var l = i.length
+               if(l-3 >= 0){
+                   return i[l-3].correct === true ? 'green' :'red'
+               }else{return 'grey'}
+           }           
+       },
+       
+
+
        translate(e){
            if(!e){
                this.snackbar=true
@@ -382,8 +449,7 @@ export default {
     updatedata(){
         //Get words of user
         this.words = []
-        
-       
+               
         this.loading = true
         db.collection("users").doc(this.loginid.email).collection("words").get().then(querySnapshot =>{
            querySnapshot.forEach(doc=> {
