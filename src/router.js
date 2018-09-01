@@ -110,11 +110,11 @@ router.beforeEach((to, from, next)=>{
     }
   } else if(to.matched.some(record=>record.meta.requiresGuest)){
     //Check if  logged in    
-
-     async function token(){
-      await db.collection("tokens").doc(to.params.token).get().then(
+    var data =''
+     function token(){
+       db.collection("tokens").doc(to.params.token).get().then(
         query=>{
-          console.log(query)
+         data = query.data()  
           if(query.exists){
             return true
           }else{
@@ -122,6 +122,7 @@ router.beforeEach((to, from, next)=>{
             return false}
         }
       ).then((res)=>{
+        
         if(res===false){
       
           next({
@@ -131,13 +132,25 @@ router.beforeEach((to, from, next)=>{
             }
           })
         }else{
+          var today = Math.floor(Date.now() / 1000)
+                   
+            if(today < data.validUntil.seconds){
+              next()
+            }else{
+              next({
+                path:'/login',
+                query:{
+                  redirect: to.fullPath
+                }
+              })  
+            }  
           
-          //Proceed to route
-          next()
+          
         } 
 
       })
-     } 
+     }
+     console.log(token()) 
    
   } else{
     next()}
