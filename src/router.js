@@ -9,6 +9,8 @@ import Words from '@/components/words'
 import explore from '@/components/explore'
 import register from '@/components/register'
 import firebase from 'firebase'
+import db from './db/firebaseinit'
+
 
 Vue.use(Router)
 
@@ -44,9 +46,7 @@ let router = new Router({
       path: '/login',
       name: 'login',
       component: login,
-      meta:{
-        requiresGuest:true
-      }
+      
     },
           
     {
@@ -54,7 +54,7 @@ let router = new Router({
       name: 'home',
       component: home,
       meta:{
-        requiresGuest:true
+        requiresAuth:true
       }
     },
     {
@@ -74,9 +74,12 @@ let router = new Router({
       }
     },
     {
-      path: '/register',
+      path: '/register/:token',
       name: 'register',
       component: register,
+      meta:{
+        requiresGuest:true
+      }
       
     },
 
@@ -105,21 +108,38 @@ router.beforeEach((to, from, next)=>{
       //Proceed to route
       next()
     }
-  }/* else if(to.matched.some(record=>record.meta.requiresGuest)){
-    //Check if  logged in
-    if(firebase.auth().currentUser){
-      //Go to Login
-      next({
-        path:'/home',
-        query:{
-          redirect: to.fullPath
+  } else if(to.matched.some(record=>record.meta.requiresGuest)){
+    //Check if  logged in    
+
+     async function token(){
+      await db.collection("tokens").doc(to.params.token).get().then(
+        query=>{
+          console.log(query)
+          if(query.exists){
+            return true
+          }else{
+            
+            return false}
         }
+      ).then((res)=>{
+        if(res===false){
+      
+          next({
+            path:'/login',
+            query:{
+              redirect: to.fullPath
+            }
+          })
+        }else{
+          
+          //Proceed to route
+          next()
+        } 
+
       })
-    }else{
-      //Proceed to route
-      next()
-    } 
-  } */else{
+     } 
+   
+  } else{
     next()}
 })
 //Nav Guards

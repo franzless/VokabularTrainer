@@ -433,7 +433,7 @@ export default {
             }}
             else{
                 this.loading = true
-                db.collection("users").doc(this.loginid.email).collection("words").doc(this.editedItem.wordid).set({
+                db.collection("users").doc(this.loginid.email).collection("words").doc(this.editedItem.wordid).update({
                     wordde:this.editedItem.wordde,
                     worden:this.editedItem.worden,
                     category:this.editedItem.category,
