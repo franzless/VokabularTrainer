@@ -28,9 +28,7 @@ export default new Vuex.Store({
     },
     listinfo(state,payload){
       state.listinfo = []
-          payload.forEach(info=>{
-          state.listinfo.push(info)
-        })            
+          state.listinfo = payload        
     }
     
     },

@@ -229,6 +229,15 @@ export default {
     created(){
           this.updatedata()
           
+          db.collection("tests").doc(this.loginid.email).get().then(query=>{
+              if(!query.exists){
+                  db.collection("tests").doc(this.loginid.email).set({
+                      uid:this.loginid.uid,
+                      username:this.loginid.displayName
+                  })
+              }
+          })
+          
           
      },
      
@@ -250,7 +259,7 @@ export default {
                return 'adb'
            }else{
                var l = i.length
-               if(l-1){
+               if(l-1>=0){
                    return i[l-1].correct === true ? 'mood' :'mood_bad'
                }else{return 'adb'}
            }        
@@ -281,7 +290,7 @@ export default {
                return 'grey'
            }else{
                var l = i.length
-               if(l-1){
+               if(l-1>=0){
                    return i[l-1].correct === true ? 'green' :'red'
                }else{return 'grey'}
            }           
@@ -418,16 +427,23 @@ export default {
             if(this.editedIndex === -1){           
             if(this.editedItem.wordde != '' && this.editedItem.worden != ''){
                this.loading = true
-                db.collection("users").doc(this.loginid.email).collection("words").doc().set({
+                db.collection("users").doc(this.loginid.email).collection("words").add({
                     wordde:this.editedItem.wordde,
                     worden:this.editedItem.worden,
                     category:this.editedItem.category
-                }).then(()=>{
+                }).then((r)=>{
+                    
+                    this.addtoTests(r.id)
                     this.updatedata()
-                }) 
+                }).then(()=>{
+                    setTimeout(()=>{
                     this.editedItem.wordde=''
                     this.editedItem.worden=''
                     this.editedItem.category=''
+                    },1000)
+                    
+                }) 
+                    
                 }
             else{alert('Enter words first')
             }}
@@ -459,6 +475,20 @@ export default {
            })
             this.loading= false
             
+    },
+    addtoTests(e){
+         db.collection("tests").doc(this.loginid.email).collection("daily").doc(e).set({
+            wordde:this.editedItem.wordde,
+            worden:this.editedItem.worden,
+            wordid:e            
+        }).then(()=>{
+         db.collection("tests").doc(this.loginid.email).collection("weekly").doc(e).set({
+            wordde:this.editedItem.wordde,
+            worden:this.editedItem.worden,
+            wordid:e            
+        })
+
+        })
     }
 
 
