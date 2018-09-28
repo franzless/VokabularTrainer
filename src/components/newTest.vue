@@ -27,7 +27,16 @@
                  <v-list-tile>
                      <v-radio-group v-model="radio" :mandatory="false">
                      <v-radio color="yellow darken-3" value="custom" label="custom"></v-radio>
-                     <v-radio color="red" value="random" label="random"></v-radio>
+                     <v-radio color="red" value="random" label="Random"></v-radio>
+                     
+                 </v-radio-group>
+                 
+                 </v-list-tile>
+                 <v-list-tile>
+                     <v-radio-group v-model="radio" :mandatory="false">
+                     
+                     <v-radio color="blue" value="daily" label="Daily"></v-radio>
+                     <v-radio color="green" value="weekly" label="Weekly"></v-radio>
                                        
                  </v-radio-group>
                  
@@ -126,7 +135,7 @@ export default {
            
            this.words= []
            var data = []
-           if(!this.list && !this.numberofwords){
+           if(!this.list && !this.numberofwords && this.radio != 'daily') {
                this.alert=true
            }else{
                if(this.radio == 'custom'){
@@ -179,6 +188,23 @@ export default {
                         this.$router.push('/test')
                     })
                         }}
+                    else if(this.radio == 'daily'){
+                        db.collection("tests").doc(this.user.email).collection("daily").get().then(query=>{
+                            query.forEach(doc=>{
+                                this.words.push({docid:doc.id,
+                                        ...doc.data()})
+                            })
+                        }).then(()=>{
+                            this.loading = true
+                            data={Lname:'daily',uid:this.user.uid}
+                        setTimeout(()=>{
+                        this.$store.dispatch('addWords',this.words)
+                        this.$store.dispatch('listinfo',data)
+                        this.$router.push('/test')
+                        this.loading=false
+                        },4000)    
+                        })
+                    }
                     }
         },
        getlists(){

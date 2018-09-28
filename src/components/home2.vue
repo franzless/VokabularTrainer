@@ -38,22 +38,50 @@
     
 </template>
 <script>
+import db from '../db/firebaseinit'
 export default {
     data(){
         return{
             email:'',
             snackbar:false,
             confirm:false,
-            timeout:6000
+            timeout:6000,
+            token:''
         }
     },
+    
 methods:{
     invite(){
+        var today = new Date()
         if(!this.email){
             this.snackbar=true
         }else{
-            this.confirm=true           
+                this.createToken()
+                
+                db.collection("tokens").doc(this.token).set({
+                        createdAt:  today,
+                        validUntil: new Date(today.getFullYear(), today.getMonth(), today.getDate()+7)
+                     })
+               .then(()=>{
+                   // Security missing for Server credentials https://www.smtpjs.com/
+                    Email.send("vokabularinfo@gmail.com",
+                        this.email,
+                        "Registration",
+                        "To create an Account click the following link: http://localhost:8080/register/"+this.token,
+                        "smtp.elasticemail.com",
+                        "vokabularinfo@gmail.com",
+                        "bbab9384-fd30-4161-85ce-0df6972fc587");
+                    this.confirm=true    
+                })
+            
+            
+                   
         }
+    },
+    createToken(){
+      this.token= Math.random().toString(36).substr(2)
+      this.token=this.token + Math.random().toString(36).substr(2)
+       
     }
 }   
 }

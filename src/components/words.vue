@@ -104,9 +104,9 @@
                     <td>{{ props.item.wordde }}</td>
                     <td>{{ props.item.worden }}</td>
                     <td>{{ props.item.category }}</td>
-                    <td><v-icon color="red">sentiment_very_dissatisfied</v-icon>
-                        <v-icon color="grey">adb</v-icon>
-                        <v-icon color="green">insert_emoticon</v-icon></td>
+                    <td><v-icon :color="color1(props.item.statistics)">{{`${icon1(props.item.statistics)}`}}</v-icon>
+                        <v-icon :color="color2(props.item.statistics)">{{`${icon2(props.item.statistics)}`}}</v-icon>
+                        <v-icon :color="color3(props.item.statistics)">{{`${icon3(props.item.statistics)}`}}</v-icon></td>
                     <td class="justify-center ">
                         <v-icon
                             small
@@ -228,10 +228,22 @@ export default {
     },
     created(){
           this.updatedata()
+          
+          db.collection("tests").doc(this.loginid.email).get().then(query=>{
+              if(!query.exists){
+                  db.collection("tests").doc(this.loginid.email).set({
+                      uid:this.loginid.uid,
+                      username:this.loginid.displayName
+                  })
+              }
+          })
+          
+          
      },
      
 
    computed: {
+      
       formTitle () {
         return {title:this.editedIndex === -1 ? 'New Word' : 'Edit Word',
                 icon: this.editedIndex === -1 ? 'add_circle_outline' : 'edit'}
@@ -242,6 +254,70 @@ export default {
       
     },
    methods:{
+       icon1(i){
+           if (i === undefined){
+               return 'adb'
+           }else{
+               var l = i.length
+               if(l-1>=0){
+                   return i[l-1].correct === true ? 'mood' :'mood_bad'
+               }else{return 'adb'}
+           }        
+       },
+       icon2(i){
+           if (i === undefined){
+               return 'adb'
+           }else{
+               var l = i.length
+               if(l-2 >= 0){
+                   return i[l-2].correct === true ? 'mood' :'mood_bad'
+               }else{return 'adb'}
+           }        
+       },
+       icon3(i){
+           if (i === undefined){
+               return 'adb'
+           }else{
+               var l = i.length
+               if(l-3>=0){
+                   return i[l-3].correct === true ? 'mood' :'mood_bad'
+               }else{return 'adb'}
+           }        
+       },
+       
+       color1(i){
+           if (i === undefined){
+               return 'grey'
+           }else{
+               var l = i.length
+               if(l-1>=0){
+                   return i[l-1].correct === true ? 'green' :'red'
+               }else{return 'grey'}
+           }           
+       },
+       color2(i){
+           if (i === undefined){
+               return 'grey'
+           }else{
+               var l = i.length
+               if(l-2 >= 0){
+                   return i[l-2].correct === true ? 'green' :'red'
+               }else{return 'grey'}
+           }           
+       },
+       color3(i){
+           if (i === undefined){
+               return 'grey'
+           }else{
+               var l = i.length
+               if(l-3 >= 0){
+                   return i[l-3].correct === true ? 'green' :'red'
+               }else{return 'grey'}
+           }           
+       },
+       
+
+
        translate(e){
            if(!e){
                this.snackbar=true
@@ -351,22 +427,29 @@ export default {
             if(this.editedIndex === -1){           
             if(this.editedItem.wordde != '' && this.editedItem.worden != ''){
                this.loading = true
-                db.collection("users").doc(this.loginid.email).collection("words").doc().set({
+                db.collection("users").doc(this.loginid.email).collection("words").add({
                     wordde:this.editedItem.wordde,
                     worden:this.editedItem.worden,
                     category:this.editedItem.category
-                }).then(()=>{
+                }).then((r)=>{
+                    
+                    this.addtoTests(r.id)
                     this.updatedata()
-                }) 
+                }).then(()=>{
+                    setTimeout(()=>{
                     this.editedItem.wordde=''
                     this.editedItem.worden=''
                     this.editedItem.category=''
+                    },1000)
+                    
+                }) 
+                    
                 }
             else{alert('Enter words first')
             }}
             else{
                 this.loading = true
-                db.collection("users").doc(this.loginid.email).collection("words").doc(this.editedItem.wordid).set({
+                db.collection("users").doc(this.loginid.email).collection("words").doc(this.editedItem.wordid).update({
                     wordde:this.editedItem.wordde,
                     worden:this.editedItem.worden,
                     category:this.editedItem.category,
@@ -382,8 +465,7 @@ export default {
     updatedata(){
         //Get words of user
         this.words = []
-        
-       
+               
         this.loading = true
         db.collection("users").doc(this.loginid.email).collection("words").get().then(querySnapshot =>{
            querySnapshot.forEach(doc=> {
@@ -393,6 +475,20 @@ export default {
            })
             this.loading= false
             
+    },
+    addtoTests(e){
+         db.collection("tests").doc(this.loginid.email).collection("daily").doc(e).set({
+            wordde:this.editedItem.wordde,
+            worden:this.editedItem.worden,
+            wordid:e            
+        }).then(()=>{
+         db.collection("tests").doc(this.loginid.email).collection("weekly").doc(e).set({
+            wordde:this.editedItem.wordde,
+            worden:this.editedItem.worden,
+            wordid:e            
+        })
+
+        })
     }
 
 

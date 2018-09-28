@@ -125,6 +125,7 @@ export default {
        setTimeout(()=>{
               
               this.x = this.words.length -1
+              console.log(this.words)
              
        },1000)
     
@@ -174,7 +175,7 @@ export default {
            if(this.i==this.x){
                this.result.push({deutsch:this.setword(),englisch:this.checkword})
                this.newarray()
-               if(this.info){
+               if(this.info.Lname != 'daily'){
                    this.clicks()
                }
                this.count()
@@ -221,7 +222,14 @@ export default {
                }
            }
        })
-       this.updatestatistics()
+       if(this.info.Lname == 'daily'){
+       this.updatestatisticsDaily()
+       }else if(this.info.Lname == 'weekly'){
+           this.updatestatisticsWeekly()
+       }
+       else{
+           this.updatestatistics()
+       }
           
        },
         async updatestatistics(){
@@ -230,6 +238,28 @@ export default {
                 .doc(word.wordid).update({    
                     statistics:firebase.firestore.FieldValue.arrayUnion({correct:word.value, time: new Date (Date.now())})
    
+                })
+            })
+        },
+        async updatestatisticsDaily(){
+            await this.mappedresult.forEach(word=>{
+                db.collection("tests").doc(this.user.email).collection("daily")
+                .doc(word.wordid).update({    
+                    statistics:firebase.firestore.FieldValue.arrayUnion({correct:word.value, time: new Date (Date.now())})
+   
+                }).then(()=>{
+                    this.updatestatistics()
+                })
+            })
+        },
+        async updatestatisticsWeekly(){
+            await this.mappedresult.forEach(word=>{
+                db.collection("tests").doc(this.user.email).collection("weekly")
+                .doc(word.wordid).update({    
+                    statistics:firebase.firestore.FieldValue.arrayUnion({correct:word.value, time: new Date (Date.now())})
+   
+                }).then(()=>{
+                    this.updatestatistics()
                 })
             })
         }
