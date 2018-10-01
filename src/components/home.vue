@@ -1,6 +1,7 @@
 <template>
 <div>
-    <my-toolbar></my-toolbar>   
+    <my-toolbar></my-toolbar>
+   
     <v-parallax height="600" :src="require('@/assets/text2.jpg')">
     <v-layout align-center justify-center column wrap>
         <img src="../assets/globe.png" width="100" >
