@@ -8,6 +8,8 @@ import home from '@/components/home2'
 import Words from '@/components/words'
 import explore from '@/components/explore'
 import register from '@/components/register'
+import neuefrage from '@/components/neueFrage'
+import Ndrawer from '@/components/Ndrawer'
 import firebase from 'firebase'
 import db from './db/firebaseinit'
 
@@ -80,6 +82,20 @@ let router = new Router({
       meta:{
         requiresGuest:true
       }
+      
+    },
+    {
+      path: '/neuefrage',
+      name: 'neuefrage',
+      component: neuefrage,
+      meta:{
+        requiresAuth:true
+      }
+    },
+    {
+      path: '/testing',
+      name: 'testing',
+      component: Ndrawer,
       
     },
 

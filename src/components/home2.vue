@@ -1,10 +1,11 @@
 <template>
 <div id="home">
-<my-toolbar></my-toolbar>
-<my-drawer></my-drawer>
+
+<my-drawer ></my-drawer>
 
 <v-parallax height="900" :src="require('@/assets/text2.jpg')">
 <v-layout justify-center align-center>
+    
     <v-flex xs12 sm9 md7 lg4>
         <v-toolbar color="plight"><v-icon size="45" color="secondary">loyalty</v-icon><v-toolbar-title>Invite someone</v-toolbar-title></v-toolbar>
 <v-card>

@@ -118,6 +118,7 @@ export default {
        }
    },
    created(){
+       
        this.getlists()
        this.yourWords()
    },
@@ -157,11 +158,12 @@ export default {
                     }).then(()=>{
                         this.loading = true
                         setTimeout(()=>{
-                        this.$store.dispatch('addWords',this.words)
-                        this.$store.dispatch('listinfo',data)
+                        
                         this.$router.push('/test')
                         this.loading=false
-                        },4000)
+                        },2000)
+                        this.$store.dispatch('addWords',this.words)
+                        this.$store.dispatch('listinfo',data)
                         
                         
                         

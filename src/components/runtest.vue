@@ -128,8 +128,7 @@ export default {
               console.log(this.words)
              
        },1000)
-    
-    
+        
               
    },
    computed:{
