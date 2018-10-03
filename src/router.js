@@ -94,6 +94,14 @@ let router = new Router({
       }
     },
     {
+      path: '/fragenkatalog',
+      name: 'fragenkatalog',
+      component: fragenkatalog,
+      meta:{
+        requiresAuth:true
+      }
+    },
+    {
       path: '/testing',
       name: 'testing',
       component: fragenkatalog,

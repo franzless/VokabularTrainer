@@ -1,6 +1,6 @@
 <template>
 <div id="home">
-
+<my-toolbar></my-toolbar>
 
 
 <v-parallax height="900" :src="require('@/assets/text2.jpg')">
