@@ -59,12 +59,12 @@
                 <v-list class="amber lighten-5">
                      
                     <v-list-tile  v-for="(word,index) in words" :key="index">
-                        <v-list-tile-avatar size="30"><img src="../assets/englisch.png" alt=""></v-list-tile-avatar>
+                        <v-list-tile-avatar size="30"><img src="../../assets/englisch.png" alt=""></v-list-tile-avatar>
                             <v-flex xs6>
                                 <v-list-tile-content  class="text-lg-right">{{word.worden}}</v-list-tile-content>
                             </v-flex>
                         <v-divider vertical class="mx-3"></v-divider>
-                                <v-list-tile-avatar size="30"><img src="../assets/german.png" alt=""></v-list-tile-avatar>
+                                <v-list-tile-avatar size="30"><img src="../../assets/german.png" alt=""></v-list-tile-avatar>
                             <v-flex xs6>
                              <v-list-tile-content class="text-lg-right">{{word.wordde}}</v-list-tile-content>
                         </v-flex>
@@ -87,7 +87,7 @@
     
 </template>
 <script>
-import db from '../db/firebaseinit'
+import db from '../../db/firebaseinit'
 export default {
     data(){
         return{

@@ -1,15 +1,16 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import runtest from '@/components/runtest'
-import newtest from '@/components/newTest'
-import addWords from '@/components/addWords'
-import login from '@/components/login'
-import home from '@/components/home2'
-import Words from '@/components/words'
-import explore from '@/components/explore'
-import register from '@/components/register'
-import neuefrage from '@/components/neueFrage'
-import Ndrawer from '@/components/Ndrawer'
+import runtest from '@/components/Wörterbuch/runtest'
+import newtest from '@/components/Wörterbuch/newTest'
+import addWords from '@/components/Wörterbuch/addWords'
+import login from '@/components/Wörterbuch/login'
+import home from '@/components/Wörterbuch/home2'
+import Words from '@/components/Wörterbuch/words'
+import explore from '@/components/Wörterbuch/explore'
+import register from '@/components/Wörterbuch/register'
+import neuefrage from '@/components/Fragenkatalog/neueFrage'
+import fragenkatalog from '@/components/Fragenkatalog/Fragenkatalog'
+
 import firebase from 'firebase'
 import db from './db/firebaseinit'
 
@@ -95,7 +96,7 @@ let router = new Router({
     {
       path: '/testing',
       name: 'testing',
-      component: Ndrawer,
+      component: fragenkatalog,
       
     },
 

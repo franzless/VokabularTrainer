@@ -4,7 +4,7 @@ import './plugins/vuetify'
 import App from './App.vue'
 import router from './router'
 import toolbar from '@/components/navbar'
-import words from '@/components/words'
+import words from '@/components/Wörterbuch/words'
 import store from './store'
 
 

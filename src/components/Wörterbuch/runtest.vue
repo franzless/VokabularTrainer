@@ -26,7 +26,7 @@
                 <v-subheader>{{i+1}}  of {{x+1}}</v-subheader>
                 <v-list-tile avatar>
                     <v-list-tile-avatar>
-                        <img src="../assets/german.png" >
+                        <img src="../../assets/german.png" >
                     </v-list-tile-avatar>
                     <v-list-tile-content>
                         <v-text-field disabled box :value="setword()"></v-text-field>
@@ -34,7 +34,7 @@
                 </v-list-tile>
                 <v-list-tile avatar>
                     <v-list-tile-avatar>
-                        <img src="../assets/englisch.png" >
+                        <img src="../../assets/englisch.png" >
                     </v-list-tile-avatar>
                     <v-list-tile-content>
                         <v-text-field box v-model="checkword"></v-text-field>
@@ -100,7 +100,7 @@
     </div>
 </template>
 <script>
-import db from '../db/firebaseinit'
+import db from '../../db/firebaseinit'
 import firebase from 'firebase'
 export default {
    name:'runtest',

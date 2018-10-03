@@ -37,7 +37,7 @@
 </template>
 <script>
 import firebase from 'firebase'
-import db from '../db/firebaseinit'
+import db from '../../db/firebaseinit'
 export default {
     data(){
         return{

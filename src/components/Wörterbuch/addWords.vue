@@ -20,7 +20,7 @@
                 <v-text-field box label="Füge ein neues Wort ein" v-model="wordDE">
                 </v-text-field>
             </v-flex>
-            <v-avatar size="50" ><img src="../assets/german.png" alt="">    
+            <v-avatar size="50" ><img src="../../assets/german.png" alt="">    
                 </v-avatar>
             </v-layout>
         <!-- Felder für Deutsch Ende-->
@@ -32,7 +32,7 @@
 
                 </v-text-field>
             </v-flex>
-            <v-avatar size="50"><img src="../assets/englisch.png" alt="">    
+            <v-avatar size="50"><img src="../../assets/englisch.png" alt="">    
                 </v-avatar>
             </v-layout>
         <!-- Felder für Englisch Ende-->
@@ -52,7 +52,7 @@
 
 </template>
 <script>
-import db from '../db/firebaseinit'
+import db from '../../db/firebaseinit'
 export default {
     name:'addWords',
     data(){

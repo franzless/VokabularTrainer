@@ -1,7 +1,7 @@
 <template>
 <div id="home">
 
-<my-drawer ></my-drawer>
+
 
 <v-parallax height="900" :src="require('@/assets/text2.jpg')">
 <v-layout justify-center align-center>
@@ -41,10 +41,10 @@
     
 </template>
 <script>
-import db from '../db/firebaseinit'
-import drawer from './Ndrawer'
+import db from '../../db/firebaseinit'
+
 export default {
-    components:{'my-drawer':drawer},
+    
     data(){
         return{
             email:'',

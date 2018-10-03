@@ -40,7 +40,7 @@
                 <v-text-field prepend-icon="g_translate" box v-model="editedItem.wordde" @click:prepend="translate(editedItem.wordde)">{{formTitle.title}}
                 </v-text-field>                
             </v-flex>
-            <v-avatar size="50" ><img src="../assets/96/Germany.png" alt="">    
+            <v-avatar size="50" ><img src="../../assets/96/Germany.png" alt="">    
             </v-avatar>
             </v-layout>
         <v-layout row justify-center  >
@@ -48,7 +48,7 @@
                 <v-text-field box  v-model="editedItem.worden" >
                 </v-text-field>
             </v-flex>
-                 <v-avatar size="50"><img src="../assets/96/England.png" alt="">    
+                 <v-avatar size="50"><img src="../../assets/96/England.png" alt="">    
                  </v-avatar>
         </v-layout>
         <v-layout row justify-center>
@@ -196,7 +196,7 @@
 </div>
 </template>
 <script>
-import db from '../db/firebaseinit'
+import db from '../../db/firebaseinit'
 import axios from 'axios'
 export default {
     data(){
