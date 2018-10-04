@@ -3,7 +3,7 @@
   <my-toolbar></my-toolbar>
 <v-container style="max-width: 800px">
     <v-text-field v-model="frage" label="Neue Frage" solo ></v-text-field>
-    <v-text-field v-if="(remaining > 0 && frage.length>10)" v-model="antwort" label="Erstelle eine Antwort" solo @keydown.enter="addAntwort">
+    <v-text-field v-if="(completed > 0 || frage.length>10)" v-model="antwort" label="Erstelle eine Antwort" solo @keydown.enter="addAntwort">
          <v-fade-transition slot="append">
             <v-icon v-if="antwort" @click="addAntwort"> add_circle</v-icon>
       </v-fade-transition>
@@ -60,7 +60,7 @@
                 
                     <v-list-tile v-for="antwort in antworten" :key="antwort.id">
                             <v-list-tile>
-                              <v-checkbox v-if="remaining==1" v-model="antwort.zustand" @click="counter++" ></v-checkbox>
+                              <v-checkbox v-if="remaining < 2" v-model="antwort.zustand" @click.native ="check(antwort.zustand)" ></v-checkbox>
                             </v-list-tile>
                             
                             <v-text-field class="test"  v-model="antwort.text" @click:prepend="lockTrue(antwort.text)"></v-text-field>
@@ -72,7 +72,7 @@
            
         </v-card>
         <br>
-        <v-btn color="success" v-if="remaining==0" @click="finish">Frage erstellen</v-btn>
+        <v-btn color="success" v-if="completed>5" @click="finish">Erstellen</v-btn>
     </v-container>    
 
 </div>   
@@ -121,6 +121,13 @@ export default {
         text: this.antwort
       });
       this.antwort = "";
+    },
+    check(value){
+      if(value===true){
+        this.counter++
+      }else{
+        this.counter--
+      }
     },
         
     finish() {
