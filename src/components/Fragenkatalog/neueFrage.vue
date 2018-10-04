@@ -55,9 +55,8 @@
         </v-layout>
         <v-divider></v-divider>
         <v-card v-if="completed > 0" width="100%">
-          
+         
            <v-list >                                
-                
                     <v-list-tile v-for="antwort in antworten" :key="antwort.id">
                             <v-list-tile>
                               <v-checkbox v-if="remaining < 2" v-model="antwort.zustand" @click.native ="check(antwort.zustand)" ></v-checkbox>
@@ -73,18 +72,28 @@
         </v-card>
         <br>
         <v-btn color="success" v-if="completed>5" @click="finish">Erstellen</v-btn>
-    </v-container>    
+    </v-container> 
+
+    <v-dialog v-model="dialog" width="300" >
+      <v-card>
+        <v-card-title class="headline grey lighten-2"
+          primary-title>
+          <v-alert :value="true" type="success">Erfolgreich erstellt !!</v-alert>
+        </v-card-title>
+      </v-card>
+      </v-dialog>   
 
 </div>   
 </template>
 <script>
+import db from '../../db/firebaseinit'
 export default {
   data() {
     return {
       antworten: [],
       antwort: "",
       frage: "",
-      richtige: "",
+      dialog: false,
       counter:null
       
     }
@@ -102,6 +111,9 @@ export default {
   
  ,
   computed: {
+    user (){
+      return this.$store.getters.login
+    },
     remaining() {
       return 6 - this.counter;
     },
@@ -131,13 +143,28 @@ export default {
     },
         
     finish() {
-      if ( this.frage) {
-        console.log(this.antworten)
-        alert("ok");
-      } else {
-        alert("Frage oder Richtige Antwort fehlt");
+
+    var array = this.antworten.map((a)=>{return{
+      id:a.id,text:a.text
+    }})
+    var richtig = this.antworten.filter(a=>a.zustand===true).map((a)=>{return{
+      id:a.id,text:a.text
+    }})     
+
+        db.collection("users").doc(this.user.email).collection("fragen").add({
+        frage:this.frage,
+        antworten:array,
+        richtig:richtig
+      })
+      .then(()=>{
+        this.antworten = []
+        this.frage= ''
+        this.antwort=''
+        this.counter = null
+        this.dialog=true
+      })  
       }
-    },
+    ,
     
   }
 };
