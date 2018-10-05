@@ -34,35 +34,21 @@
         </v-card-actions>
         <v-card-actions>
              <v-expansion-panel popout >
-        <v-expansion-panel-content v-for="(test,i) in tests" :key="i">
+        <v-expansion-panel-content v-for="frage in fragen" :key="frage.fragenid">
             <div slot="header">
                 <v-layout row align-center>
-                    <v-checkbox :label="test.frage"></v-checkbox><v-btn flat ><v-icon>edit</v-icon></v-btn>
+                    <v-checkbox :label="frage.frage"></v-checkbox><v-btn flat ><v-icon>edit</v-icon></v-btn>
                 </v-layout>
                 
                 
             </div>
             <v-list>
-                <v-list-tile >
+                <v-list-tile v-for="antworten in frage" :key="antworten.id">
                     <v-list-tile-content>
-                        {{test.antwort}}
+                       {{antworten.id}}:{{antworten.text}}
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile >
-                    <v-list-tile-content>
-                        {{test.antwort2}}
-                    </v-list-tile-content>
-                </v-list-tile>
-                <v-list-tile >
-                    <v-list-tile-content>
-                        {{test.antwort3}}
-                    </v-list-tile-content>
-                </v-list-tile>
-                <v-list-tile >
-                    <v-list-tile-content>
-                        {{test.antwort4}}
-                    </v-list-tile-content>
-                </v-list-tile>
+                
             </v-list>
         </v-expansion-panel-content>
         </v-expansion-panel>
@@ -80,14 +66,29 @@
     
 </template>
 <script>
+import db from '../../db/firebaseinit'
 export default {
+    
     data(){
         return{
+            fragen:[],
             tests:[{frage:'frage',antwort:'test',antwort2:'antwort2',antwort3:'antwort3',antwort4:'antwort4',richtig:'antwort',test:''},
                     {frage:'frage2',antwort:'test',antwort2:'antwort2',antwort3:'antwort3',antwort4:'antwort4',richtig:'antwort',test:''},
                     {frage:'frage3',antwort:'test',antwort2:'antwort2',antwort3:'antwort3',antwort4:'antwort4',richtig:'antwort',test:''},
                     {frage:'frage4',antwort:'test',antwort2:'antwort2',antwort3:'antwort3',antwort4:'antwort4',richtig:'antwort',test:''},
                     {frage:'frage5',antwort:'test',antwort2:'antwort2',antwort3:'antwort3',antwort4:'antwort4',richtig:'antwort',test:''},]
+        }
+    },
+    created(){
+        db.collection("user").doc(this.user.email).collection("fragen").get().then(snap=>{
+                snap.forEach(data=>{
+                    this.fragen.push(({fragenid:doc.id,...doc.data()}) )
+                })
+            })
+    },
+    computed:{
+        user (){
+            return this.$store.getters.login
         }
     }
 }
