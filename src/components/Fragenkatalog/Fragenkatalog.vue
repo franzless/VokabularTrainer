@@ -12,7 +12,7 @@
            
             <v-combobox v-model="katalog" :items="kataloge" label="Fragenkatalog"></v-combobox>
             <v-tooltip bottom>
-            <v-btn fab slot="activator"><v-icon>build</v-icon></v-btn>
+            <v-btn @click="Katalogbearbeiten" fab slot="activator"><v-icon>build</v-icon></v-btn>
             <span>ausgewählten Fragenkatalog bearbeiten</span>
             </v-tooltip>
             <v-tooltip bottom>
@@ -30,6 +30,10 @@
         <v-card-title>
             <v-alert dismissible v-model="alert" type="error" transition="scale-transition">{{fehler}}</v-alert>
         </v-card-title>
+        <v-card-title v-if="save">
+            <v-alert dismissible value="true" type="success">Katalog erfolgreich geladen</v-alert>
+            <v-btn @click="saveChanges">Änderungen speichern</v-btn>
+        </v-card-title>
         <v-card-actions>
             <v-divider></v-divider>
             <br>
@@ -39,7 +43,7 @@
         <v-expansion-panel-content v-for="frage in fragen" :key="frage.fragenid">
             <div slot="header">
                 <v-layout row align-center>
-                    <v-checkbox @click.native="addFrage(frage)" :label="frage.frage"></v-checkbox><v-btn flat ><v-icon>edit</v-icon></v-btn>
+                    <v-checkbox @click.native="addFrage(frage)" :label="frage.frage" v-model="frage.checked"></v-checkbox><v-btn flat ><v-icon>edit</v-icon></v-btn>
                 </v-layout>
                 
                 
@@ -78,25 +82,21 @@ export default {
             katalog:'',
             kataloge:[],
             alert:false,
-            fehler:''
+            fehler:'',
+            bearbeiten:[],
+            save:false,
+            katalogid:''
             
         }
     },
     
     created(){
-       
-        db.collection("users").doc(this.user.email).collection("fragen").get().then(snap=>{
-                snap.forEach(doc=>{                    
-                    this.fragen.push({fragenid:doc.id,...doc.data()})
-                })
-            })
-         db.collection("kataloge").get().then(snap=>{snap.forEach(doc=>{
-            this.kataloge.push(doc.data().katalogname)
-        })}) 
+        this.getfragen()
+        
         
     },
     updated(){
-    console.log(this.checked)    
+       
         
     },
     computed:{
@@ -133,11 +133,15 @@ export default {
             }).then(r=>{               
                 
             this.checked.forEach(frage=>{
-            db.collection("kataloge").doc(r.id).collection("fragen").add(
-                    frage)
+                db.collection("kataloge").doc(r.id).collection("fragen").add({
+                    fragenid:frage.fragenid,
+                    frage:frage.frage,
+                    antworten:frage.antworten,
+                    richtig:frage.richtig
+                })
+                })
+                })
             }
-                                
-            )})}
 
         },
         addFrage(a){
@@ -147,9 +151,70 @@ export default {
                 this.checked.push(a)
             }else{
                 this.checked.splice(check,1)
+            }            
+           },
+        Katalogbearbeiten(){
+            this.bearbeiten = []
+            this.checked = []
+            this.getfragen()            
+            if(!this.katalog){
+                this.fehler='Bitte wählen Sie erst den bereits erstellten Katalog aus, welchen Sie bearbeiten möchten'
+                this.alert=true
+            }else{
+                db.collection("kataloge").where("katalogname","==",this.katalog).get().then(query=>{
+                    query.forEach(doc=>{
+                        this.katalogid= doc.id
+                    })
+                }).then(()=>{
+                db.collection("kataloge").doc(this.katalogid).collection("fragen").get().then(snap=>{
+                    snap.forEach(doc=>{
+                        this.bearbeiten.push({fragenid:doc.data().fragenid,docid:doc.id})
+                        this.checked.push(doc.data())
+                    })
+                }).then(()=>{
+                    this.save = true
+
+                       for(var x=0;x<this.fragen.length;x++){ 
+                            for(var i=0;i<this.bearbeiten.length;i++){                       
+                                if(this.fragen[x].fragenid===this.bearbeiten[i].fragenid){
+                                    this.fragen[x].checked = true                                    
+                                }
+                       }} 
+                   
+                    
+                    })
+                })
             }
-            
-           } 
+        },
+        saveChanges(){
+            //braucht noch Überarbeitung, funktioniert zwar, aber ungut
+            this.save=false
+
+                this.bearbeiten.forEach(frage=>{
+                db.collection("kataloge").doc(this.katalogid).collection("fragen").doc(frage.docid).delete(
+                )})
+
+                    this.checked.forEach(frage=>{
+                        db.collection("kataloge").doc(this.katalogid).collection("fragen").add({
+                            fragenid:frage.fragenid,
+                            frage:frage.frage,
+                            antworten:frage.antworten,
+                            richtig:frage.richtig
+                })
+                })
+        },
+        getfragen(){
+            this.fragen = []
+            this.kataloge = []
+        db.collection("users").doc(this.user.email).collection("fragen").get().then(snap=>{
+                snap.forEach(doc=>{                    
+                    this.fragen.push({fragenid:doc.id,...doc.data()})
+                })
+            })
+         db.collection("kataloge").get().then(snap=>{snap.forEach(doc=>{
+            this.kataloge.push(doc.data().katalogname)
+        })}) 
+        }
             
             
         }
