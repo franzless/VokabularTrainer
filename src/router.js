@@ -10,6 +10,7 @@ import explore from '@/components/Wörterbuch/explore'
 import register from '@/components/Wörterbuch/register'
 import neuefrage from '@/components/Fragenkatalog/neueFrage'
 import fragenkatalog from '@/components/Fragenkatalog/Fragenkatalog'
+import fragentest from '@/components/Fragenkatalog/test'
 
 import firebase from 'firebase'
 import db from './db/firebaseinit'
@@ -97,6 +98,14 @@ let router = new Router({
       path: '/fragenkatalog',
       name: 'fragenkatalog',
       component: fragenkatalog,
+      meta:{
+        requiresAuth:true
+      }
+    },
+    {
+      path: '/KatalogTest',
+      name: 'Katalogtest',
+      component: fragentest,
       meta:{
         requiresAuth:true
       }

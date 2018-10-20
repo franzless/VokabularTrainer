@@ -16,7 +16,7 @@
             <span>ausgewählten Fragenkatalog bearbeiten</span>
             </v-tooltip>
             <v-tooltip bottom>
-                <v-btn slot="activator" fab><v-icon>play_circle_filled</v-icon></v-btn>
+                <v-btn @click="startTest" slot="activator" fab><v-icon>play_circle_filled</v-icon></v-btn>
                 <span>ausgewählten Fragenkatalog starten</span>
             </v-tooltip>
             <v-tooltip bottom>
@@ -43,7 +43,7 @@
         <v-expansion-panel-content v-for="frage in fragen" :key="frage.fragenid">
             <div slot="header">
                 <v-layout row align-center>
-                    <v-checkbox @click.native="addFrage(frage)" :label="frage.frage" v-model="frage.checked"></v-checkbox><v-btn flat ><v-icon>edit</v-icon></v-btn>
+                    <v-checkbox @click.native="addFrage(frage)" :label="frage.frage" v-model="frage.checked"></v-checkbox><v-btn @click="editFrage(frage)" flat ><v-icon>edit</v-icon></v-btn>
                 </v-layout>
                 
                 
@@ -59,15 +59,32 @@
         </v-expansion-panel-content>
         </v-expansion-panel>
         </v-card-actions>
-    </v-card>
-   
+    </v-card>   
+    <br>   
+    </v-flex>        
+    </v-layout> 
+    <!-- dialog -->
     
+        <v-dialog v-model="dialog" persistent max-width="500">
+        <v-card>
+             <v-toolbar card color="primary"><v-icon color="secondary">edit</v-icon><v-toolbar-title>Frage bearbeiten</v-toolbar-title></v-toolbar>
+            <v-container grid-list-xl>
+                <v-layout >
+                    <v-flex xs9>                       
+                    <v-text-field v-model="edit.frage" label="Frage"></v-text-field>
+                    <v-text-field v-for="e in edit.antworten" :key="e.fragenid" v-model="e.text" :label="'Antwort ' + e.id"></v-text-field>
+                    <v-btn color="primary" @click="updateFrage">fertig</v-btn>
+                    <v-btn @click="dialog=false" color="error">abbrechen</v-btn>                    
+                    
+                    </v-flex>
+                </v-layout>
+                
+            </v-container>
+        </v-card>
+     
+    </v-dialog>
     
-    <br>
-   
-        </v-flex>
-        
-        </v-layout>   
+
 </div>
     
 </template>
@@ -85,7 +102,9 @@ export default {
             fehler:'',
             bearbeiten:[],
             save:false,
-            katalogid:''
+            katalogid:'',
+            dialog:false,
+            edit:{}
             
         }
     },
@@ -105,6 +124,36 @@ export default {
         }
     },
     methods:{
+        editFrage(f){
+            
+            this.edit = f
+            this.dialog=true
+        },
+        updateFrage(){
+            var docs = []
+            var fragen = []
+           
+
+           db.collection("users").doc(this.user.email).collection("fragen").doc(this.edit.fragenid).
+           update(this.edit)
+
+            db.collection("kataloge").where("email","==",this.user.email).get().then(query=>{
+                query.forEach(doc=>{                    
+                    docs.push(doc.id)
+                })
+            }).then(()=>{
+                docs.forEach(doc=>{
+                db.collection("kataloge").doc(doc).collection("fragen").where("fragenid","==",this.edit.fragenid).get().then(query=>{query.forEach(q=>{                    
+                    fragen.push(q.id)
+                })}).then(()=>{                    
+                    fragen.forEach(f=>{
+                        db.collection("kataloge").doc(doc).collection("fragen").doc(f).update(this.edit)
+                    })
+                })
+            })
+            }) 
+           this.dialog=false 
+        },
         neuerKatalog(){
             
         var checkName = this.kataloge.filter(k=>k===this.katalog)    
@@ -203,6 +252,19 @@ export default {
                 })
                 })
         },
+        startTest(){
+            if(this.katalog){
+                this.$store.commit('katalogname', this.katalog)
+                this.$router.push('/KatalogTest')
+            }else{
+                this.fehler='Bitte wählen Sie erst den Katalog aus, welchen Sie starten möchten'
+                this.alert=true  
+            }
+            
+        },
+
+
+
         getfragen(){
             this.fragen = []
             this.kataloge = []

@@ -7,7 +7,8 @@ export default new Vuex.Store({
   state: {
     login:'',
     words:[],
-    listinfo:[]
+    listinfo:[],
+    katalogname:''
 
   },
   mutations: {
@@ -29,6 +30,10 @@ export default new Vuex.Store({
     listinfo(state,payload){
       state.listinfo = []
           state.listinfo = payload        
+    },
+    katalogname(state,payload){
+      state.katalogname = ''
+          state.katalogname = payload        
     }
     
     },
@@ -56,6 +61,9 @@ export default new Vuex.Store({
     },
     getlistinfo: state => {
       return state.listinfo
+    },
+    katalogname: state => {
+      return state.katalogname
     },
   }
 })
