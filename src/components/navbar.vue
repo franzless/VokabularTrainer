@@ -37,9 +37,9 @@
         </v-toolbar>
         </div>
         <div style="flex-basis: 8%">
-            <v-toolbar>
+            <v-toolbar >
         <v-btn flat v-if="isLoggedIn" router  to="/home">
-            <v-icon left>home</v-icon> 
+            <v-icon  left>home</v-icon> 
             Home
         </v-btn>
         <v-btn flat v-if="isLoggedIn" @click="logout">
@@ -52,12 +52,12 @@
         </div>    
 
         <div style="flex-basis: 30%">
-          <v-toolbar dark>
-              <v-toolbar-title><router-link to="/home" tag="span" style="cursor:pointer"><v-icon  >list</v-icon>  Mein Fragenkatalog</router-link></v-toolbar-title>
+          <v-toolbar  color="fprimary">
+              <v-toolbar-title><router-link to="/home" tag="span" style="cursor:pointer"><v-icon color="fsecondary"  >list</v-icon>  Mein Fragenkatalog</router-link></v-toolbar-title>
             <v-spacer></v-spacer>
 
-            <v-btn flat v-if="isLoggedIn" router to="/neuefrage"><v-icon>add</v-icon>Neue Frage</v-btn>
-            <v-btn flat  v-if="isLoggedIn" router to="/fragenkatalog"><v-icon>reorder</v-icon>Fragenkatalog</v-btn>
+            <v-btn flat v-if="isLoggedIn" router to="/neuefrage"><v-icon color="fsecondary">add</v-icon>Neue Frage</v-btn>
+            <v-btn flat  v-if="isLoggedIn" router to="/fragenkatalog"><v-icon color="fsecondary">reorder</v-icon>Fragenkatalog</v-btn>
           </v-toolbar>
         </div>
       </v-layout>

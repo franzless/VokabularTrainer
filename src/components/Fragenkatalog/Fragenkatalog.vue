@@ -5,23 +5,23 @@
    
     <v-layout justify-center fill-height row>
         <v-flex xs9 sm6 >
-    <v-card color="orange" class="elevation-5">
+    <v-card color="fprimary" class="elevation-5">
         
         <v-card-title >
            
            
-            <v-combobox v-model="katalog" :items="kataloge" label="Fragenkatalog"></v-combobox>
+            <v-combobox color="fsecondary" v-model="katalog" :items="kataloge" label="Fragenkatalog"></v-combobox>
             <v-tooltip bottom>
-            <v-btn @click="Katalogbearbeiten" fab slot="activator"><v-icon>build</v-icon></v-btn>
+            <v-btn @click="Katalogbearbeiten" color="accent" fab slot="activator"><v-icon color="fsecondary">build</v-icon></v-btn>
             <span>ausgewählten Fragenkatalog bearbeiten</span>
             </v-tooltip>
             <v-tooltip bottom>
-                <v-btn @click="startTest" slot="activator" fab><v-icon>play_circle_filled</v-icon></v-btn>
+                <v-btn @click="startTest" slot="activator" fab color="accent"><v-icon color="fsecondary">play_circle_filled</v-icon></v-btn>
                 <span>ausgewählten Fragenkatalog starten</span>
             </v-tooltip>
             <v-tooltip bottom>
                 <span>Neuen Fragenkatalog erstellen, dazu bitte die Fragen abhaken und den Namen bestimmen</span>
-                <v-btn @click="neuerKatalog" fab slot="activator" ><v-icon>add</v-icon></v-btn>
+                <v-btn @click="neuerKatalog" color="accent" fab slot="activator" ><v-icon color="fsecondary">add</v-icon></v-btn>
             </v-tooltip>
             
             
@@ -31,8 +31,9 @@
             <v-alert dismissible v-model="alert" type="error" transition="scale-transition">{{fehler}}</v-alert>
         </v-card-title>
         <v-card-title v-if="save">
-            <v-alert dismissible value="true" type="success">Katalog erfolgreich geladen</v-alert>
-            <v-btn @click="saveChanges">Änderungen speichern</v-btn>
+            <v-layout row justify-center>
+            <v-btn color="accent" @click="saveChanges">Änderungen speichern<v-icon right color="fsecondary" >save</v-icon></v-btn>
+             </v-layout>    
         </v-card-title>
         <v-card-actions>
             <v-divider></v-divider>
@@ -43,7 +44,7 @@
         <v-expansion-panel-content v-for="frage in fragen" :key="frage.fragenid">
             <div slot="header">
                 <v-layout row align-center>
-                    <v-checkbox @click.native="addFrage(frage)" :label="frage.frage" v-model="frage.checked"></v-checkbox><v-btn @click="editFrage(frage)" flat ><v-icon>edit</v-icon></v-btn>
+                    <v-checkbox @click.native="addFrage(frage)" :label="frage.frage" v-model="frage.checked"></v-checkbox><v-btn color="fsecondary" @click="editFrage(frage)" flat ><v-icon>edit</v-icon></v-btn>
                 </v-layout>
                 
                 
@@ -67,7 +68,7 @@
     
         <v-dialog v-model="dialog" persistent max-width="500">
         <v-card>
-             <v-toolbar card color="primary"><v-icon color="secondary">edit</v-icon><v-toolbar-title>Frage bearbeiten</v-toolbar-title></v-toolbar>
+             <v-toolbar card color="fprimary"><v-icon color="fsecondary">edit</v-icon><v-toolbar-title>Frage bearbeiten</v-toolbar-title></v-toolbar>
             <v-container grid-list-xl>
                 <v-layout >
                     <v-flex xs9>                       
