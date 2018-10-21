@@ -33,6 +33,7 @@
         <v-card-title v-if="save">
             <v-layout row justify-center>
             <v-btn color="accent" @click="saveChanges">Änderungen speichern<v-icon right color="fsecondary" >save</v-icon></v-btn>
+            <v-btn @click="home" fab color="accent"><v-icon color="fsecondary">home</v-icon></v-btn>
              </v-layout>    
         </v-card-title>
         <v-card-actions>
@@ -125,6 +126,10 @@ export default {
         }
     },
     methods:{
+        home(){
+            this.save = false
+            this.getfragen()
+        },
         editFrage(f){
             
             this.edit = f
@@ -252,6 +257,7 @@ export default {
                             richtig:frage.richtig
                 })
                 })
+                this.getfragen()
         },
         startTest(){
             if(this.katalog){
@@ -269,6 +275,7 @@ export default {
         getfragen(){
             this.fragen = []
             this.kataloge = []
+            this.checked = []
         db.collection("users").doc(this.user.email).collection("fragen").get().then(snap=>{
                 snap.forEach(doc=>{                    
                     this.fragen.push({fragenid:doc.id,...doc.data()})
